@@ -13,7 +13,7 @@
 </target>
 
 <target name="run" depends="compile">
-<java dir="${dir.build}" classname="Simulation" fork="true"/>
+<java dir="${dir.build}" classname="GUI" fork="true"/>
 </target>
 
 </project>
