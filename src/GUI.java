@@ -68,7 +68,7 @@ public class GUI extends JFrame
 			for( int i=118; i<138; i++)
 				for( int j=200; j<220; j++)
 				{
-					Simulation.vOld[i][j] = Simulation.vNew[i][j] = 0.01f;
+					Simulation.uOld[i][j] = Simulation.uNew[i][j] = -0.02f;
 				}
 				
 		while( true )
