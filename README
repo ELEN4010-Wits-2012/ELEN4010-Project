@@ -1,6 +1,4 @@
-# Fluid Simulator
-
-## Compilation instructions:
+Compilation instructions:
 - Install ant
 - Change to root directory containing build.xml
 - Run 'ant'command from shell
