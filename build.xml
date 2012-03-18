@@ -1,19 +1,23 @@
 <project name="Fluid" default="run" basedir=".">
+    <property name="dir.src" value="src"/>
+    <property name="dir.build" value="build"/>
+    <property name="dir.bin" value="bin"/>
 
-<property name="dir.src" value="src"/>
-<property name="dir.build" value="build"/>
-<property name="dir.bin" value="bin"/>
+    <target name="setup">
+        <mkdir dir="${dir.build}"/>
+    </target>
 
-<target name="setup">
-<mkdir dir="${dir.build}"/>
-</target>
+    <target name="compile" depends="setup" description="Compile source code">
+        <javac srcdir="${dir.src}" destdir="${dir.build}"/>
+    </target>
 
-<target name="compile" depends="setup" description="Compile source code">
-<javac srcdir="${dir.src}" destdir="${dir.build}"/>
-</target>
+    <target name="fluid" depends="compile">
+        <java dir="${dir.build}" classpath="./build" classname="GUI" fork="true"/>
+    </target>
 
-<target name="run" depends="compile">
-<java dir="${dir.build}" classname="GUI" fork="true"/>
-</target>
-
+    <target name="mpiTest" depends="compile">
+        <exec executable="mpiexec"> 
+            <arg line="-n 2 -hosts 127.0.0.1 java Main"/>
+        </exec>
+    </target>
 </project>
