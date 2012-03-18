@@ -6,8 +6,8 @@ Software Development III - Parallel Fluid Simulator (SmokEIE)
 Compilation instructions
 ------------------------
 
-1. To run the fluid simulation 'ant fluid'
-2. To run the MPI test program 'ant mpiTest'
+1. To run the fluid simulation, run 'ant fluid'
+2. To run the MPI test program, run 'ant mpiTest'
 
 Common Git commands
 -------------------
