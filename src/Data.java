@@ -9,43 +9,43 @@ class Data implements Serializable
 
     public Data(int array[][])
     {
-    	// Intitialise dimensions
-    	yLength = array.length;
-    	xLength = array[0].length;
+        // Intitialise dimensions
+        yLength = array.length;
+        xLength = array[0].length;
     	
-    	// Allocate memory for the array copy
-    	data = new int[yLength][xLength];
+        // Allocate memory for the array copy
+        data = new int[yLength][xLength];
     	   	
-    	// Create and store a COPY of the array
-    	for (int y = 0; y != yLength; y++)
-    		for (int x = 0; x != xLength; x++)
-    			data[y][x] = array[y][x];
+        // Create and store a COPY of the array
+        for (int y = 0; y != yLength; y++)
+            for (int x = 0; x != xLength; x++)
+                data[y][x] = array[y][x];
     	
-    	rank = 0;		// Default rank 
+        rank = 0;		// Default rank 
     }     
     
     public int getXLength()
     {
-    	return xLength;
+        return xLength;
     }
     
     public int getYLength()
     {
-    	return yLength;
+        return yLength;
     }
     
     public int[][] getDataArray()
     {
-    	return data;
+        return data;
     }
     
     public void setRank(int Rank)
     {
-    	rank = Rank;
+        rank = Rank;
     }
     
     public int getRank()
     {
-    	return rank;
+        return rank;
     }
 }
