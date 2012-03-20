@@ -9,17 +9,19 @@ import java.awt.Toolkit;
 public class GUI extends JFrame
 {
 	BufferedImage image;
-
+	Fluid smoke = new Fluid();
+	int size = 256;
+	
 	public GUI()
 	{
 		 
 		 super("Fluid");
 
-		 image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+		 image = new BufferedImage(size*4, size*4+30, BufferedImage.TYPE_INT_RGB);
 
 		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		 setSize(256,256);
+		 setSize(size*4,size*4+30);
 
 		 setResizable(false);
 
@@ -28,28 +30,29 @@ public class GUI extends JFrame
 
 	public void paint(Graphics g)
 	{	
-		Simulation.step();
+		smoke.step();
 		
-		for( int x = 0; x<Simulation.jmax; x++)
+		for( int x = 0; x<smoke.jmax*4; x++)
 		{
-			for( int y = 0; y<Simulation.imax; y++)
+			for( int y = 0; y<smoke.imax*4; y++)
 			{
-				int r = (int)(Simulation.rhoOld[x][y]*255.0f);
+			int dx = (int)(255.0*(smoke.rhoNew[x/4][y/4]));
+			
+				int r = dx;// (int)(Simulation.rhoOld[x][y]*255.0f);
 				if (r>255) r = 255;
-				else if(r<0) r = 0;
 				
 				Color densColor = new Color(r, r, r);
-				image.setRGB(x,y,densColor.getRGB());
+				image.setRGB(x,y+30,densColor.getRGB());
 			}
 		}
-		for( int x = 0; x<Simulation.jmax; x+=16)
+		for( int x = 1; x<4*smoke.jmax; x+=8)
 		{
-			for( int y = 0; y<Simulation.imax; y+=16)
+			for( int y = 1; y<4*smoke.imax; y+=8)
 			{
 				Graphics gd = image.createGraphics();
-				int dx = (int)(16*(Simulation.uOld[x][y])/Math.sqrt(Simulation.uOld[x][y]*Simulation.uOld[x][y]+Simulation.vOld[x][y]*Simulation.vOld[x][y]));
-				int dy = (int)(16*(Simulation.vOld[x][y])/Math.sqrt(Simulation.uOld[x][y]*Simulation.uOld[x][y]+Simulation.vOld[x][y]*Simulation.vOld[x][y]));
-				gd.drawLine(x,y,x+dy, y+dx);
+				int dx = (int)(80*(smoke.uNew[(int)x/4][(int)y/4]));
+				int dy = (int)(80*(smoke.vNew[(int)x/4][(int)y/4]));
+				//gd.drawLine(x,y,x+dx, y+dy);
 				gd.dispose();
 			}	
 		}
@@ -60,15 +63,15 @@ public class GUI extends JFrame
 	{
 		GUI gui = new GUI();
 		
-			for( int i=118; i<138; i++)
-				for( int j=220; j<240; j++)
+			for( int i=120; i<150; i++)
+				for( int j=100; j<150; j++)
 				{
-					Simulation.rhoOld[i][j] =Simulation.rhoNew[i][j] = 10f;
+					gui.smoke.rhoOld[j][i] = 100f;
 				}
-			for( int i=118; i<138; i++)
-				for( int j=200; j<220; j++)
+			for( int i=10; i<55; i++)
+				for( int j=40; j<41; j++)
 				{
-					Simulation.uOld[i][j] = Simulation.uNew[i][j] = -0.02f;
+					gui.smoke.uOld[j][i] = 0f;
 				}
 				
 		while( true )

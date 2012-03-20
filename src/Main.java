@@ -21,9 +21,7 @@ import java.lang.*;
 import java.net.*;
 import java.io.*;
 import java.text.*;
-import mpi.* ;
- 
-
+import mpi.*;
 
 class Main
 {
