@@ -12,7 +12,7 @@
     </target>
 
     <target name="fluid" depends="compile">
-        <java dir="${dir.build}" classpath="./build" classname="GUI" fork="true"/>
+        <java dir="${dir.build}" classpath="./build" classname="za.ac.wits.elen4010.fluidsim.sim.GUI" fork="true"/>
     </target>
 
     <target name="mpiTest" depends="compile">
