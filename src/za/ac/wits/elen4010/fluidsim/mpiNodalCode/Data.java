@@ -1,3 +1,5 @@
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
+
 import java.io.*;
 
 class Data implements Serializable
