@@ -8,6 +8,7 @@ import java.math.*;
  * Class representing a fluid. The fluid has a density field and
  * two velocity fields u and v (one for each dimension).
  * 
+ * @author Ronald Clark
  */
 public class Fluid
 {
