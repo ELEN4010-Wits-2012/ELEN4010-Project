@@ -1,4 +1,4 @@
-
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 class Test {
     
     public static void main(String[] args) {

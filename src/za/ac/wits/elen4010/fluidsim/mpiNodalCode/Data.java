@@ -1,27 +1,32 @@
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 import java.io.*;
 
 class Data implements Serializable
 {  
-    private int data[][];
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7811642495385252127L;
+	private int data[][];
     private int yLength;
     private int xLength;
-    private int rank;
+
 
     public Data(int array[][])
     {
-        // Intitialise dimensions
+        // Initialise dimensions
         yLength = array.length;
         xLength = array[0].length;
     	
         // Allocate memory for the array copy
         data = new int[yLength][xLength];
     	   	
-        // Create and store a COPY of the array
+        // Create and store a COPY of the array locally
         for (int y = 0; y != yLength; y++)
             for (int x = 0; x != xLength; x++)
                 data[y][x] = array[y][x];
     	
-        rank = 0;		// Default rank 
+ 
     }     
     
     public int getXLength()
@@ -39,13 +44,5 @@ class Data implements Serializable
         return data;
     }
     
-    public void setRank(int Rank)
-    {
-        rank = Rank;
-    }
-    
-    public int getRank()
-    {
-        return rank;
-    }
+
 }
