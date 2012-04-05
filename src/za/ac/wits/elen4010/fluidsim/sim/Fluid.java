@@ -93,6 +93,38 @@ public class Fluid
 
         return result;
     }
+    
+    /**
+     * Gets the density from the rendering region.
+     * 
+     * @return A jmax by (renderBottom - renderTop + 1) array of density values.
+     * 
+     * @author Justin Worthe
+     */
+    public float[][] getRenderRho()
+    {
+        float[][] result = new float[jmax + 1][renderBottom - renderTop + 1];
+
+        for ( int j = 0; j <= jmax; ++j )
+        {
+            for ( int i = 0; i <= renderBottom - renderTop; ++i )
+            {
+                result[j][i] = rhoNew[j][i + renderTop];
+            }
+        }
+
+        return result;
+    }
+    
+    /** 
+     * Gets the current elapsed time in the simulation.
+     * 
+     * @return The amount time in seconds that has been simulated so far.
+     */
+    public float getTime()
+    {
+        return t;
+    }
 
     /**
      * Gets the u velocity field from the edge next to the overlapping region.
