@@ -31,7 +31,7 @@ class GUI
     /** Name of the main window*/
     private final static String APPLICATION_NAME = "Fluidation";
     /** Dimensions of main screen*/
-    private final static Dimension APPLICATION_DIMENSIONS = new Dimension( 100, 100 );
+    private final static Dimension APPLICATION_DIMENSIONS = new Dimension( 640, 480 );
     /** Default colour for display and capture panels*/
     private final static Color APPLICATION_PANEL_COLOUR = Color.black;
     /** Stores the amount of time (in milliseconds) that the application should wait before polling the state of a subframe*/
@@ -82,9 +82,9 @@ class GUI
         while ( mouseCapturePanel.getExecutionState() )
         {}
 
-        programDataProcessor.printArrays();
+        //programDataProcessor.printArrays();
         float[][][] temp = programDataProcessor.getXVelocityInput();
-        System.out.println( "======\n" + Arrays.deepToString( temp ) );
+        //System.out.println( "======\n" + Arrays.deepToString( temp ) );
 
         System.exit( 0 );
 

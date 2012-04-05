@@ -92,8 +92,6 @@ public class DataProcessor
     private float[][] generateInputFrame( float value, int xCoord, int yCoord )
     {
 
-        System.out.println( "Dimensions: width = " + captureDimensions.getWidth() + ", height = " + captureDimensions.getHeight() );
-
         float[][] returnArray = new float[(int)captureDimensions.getWidth()][(int)captureDimensions.getHeight()];
 
         for ( int l = 0; l != captureDimensions.getWidth(); l++ )
@@ -177,7 +175,6 @@ public class DataProcessor
             // Sometimes a machine can sample faster than the system can record the sample time. In order to prevent division by zero these 'fast' samples must be discarded.
             if ( samplePoints.get( samplePoints.size() - 1 ).getTimeStamp() - newSample.getTimeStamp() == 0 )
             {
-                System.out.println( "Sample discarded" );
                 return;
             }
             velocities.add( samplePoints.get( samplePoints.size() - 1 ).getVelocity( newSample ) );
@@ -197,10 +194,8 @@ public class DataProcessor
         List<float[][]> velocitySnapShots = new Vector<float[][]>();
         Velocity nextVelocity = currentVelocity.next();
         long startTime = nextVelocity.getSampleTime();
-        System.out.println( "About to start looping" );
         while ( currentVelocity.hasNext() )
         {
-            System.out.println( "Beginning next iteration of getXVelocityInput()" );
             nextVelocity = currentVelocity.previous();
             currentVelocity = getNextVelocity( currentVelocity, startTime );
             nextVelocity = currentVelocity.next();

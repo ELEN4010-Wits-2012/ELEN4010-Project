@@ -246,7 +246,7 @@ public class DataPanel extends JPanel implements MouseMotionListener, MouseListe
         {
             if ( containedState )
             {
-                System.out.println( "Captured movement: " + dragged.getX() + ", " + dragged.getY() + ". Time = " + ( System.currentTimeMillis() - timePaused - timeStart ) );
+                //System.out.println( "Captured movement: " + dragged.getX() + ", " + dragged.getY() + ". Time = " + ( System.currentTimeMillis() - timePaused - timeStart ) );
                 SamplePoint eventSamplePoint = new SamplePoint( dragged.getX(), dragged.getY(), System.currentTimeMillis() - timePaused - timeStart, currentDensity );
                 sampleProcessor.processNewSample( eventSamplePoint );
             }
