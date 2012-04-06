@@ -1,6 +1,5 @@
 import javax.swing.JFrame;
 import javax.swing.ImageIcon;
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
@@ -9,47 +8,65 @@ import java.awt.Toolkit;
 public class GUI extends JFrame
 {
 	BufferedImage image;
-
+    int size = 64;
+    
+	FluidSimulation segment1, segment2;
+	FluidData fluidData;
+	
 	public GUI()
 	{
-		 
-		 super("Fluid");
-
-		 image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
-
-		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		 setSize(256,256);
-
-		 setResizable(false);
-
-		 setVisible(true);
+		super("Fluid");
+        
+        fluidData = new FluidData(64, 64, 64, 0.2f, 0);
+        segment1 = new FluidSimulation( new FluidData(64, 64, 32, 0.2f, 0) );
+        segment2 = new FluidSimulation( new FluidData(64, 64, 33, 0.2f, 31) );
+        
+		image = new BufferedImage(size*4, size*4+30, BufferedImage.TYPE_INT_RGB);
+         
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(size*4,size*4+30);
+		setResizable(false);
+		setVisible(true);
 	}
 
 	public void paint(Graphics g)
-	{	
-		Simulation.step();
-		
-		for( int x = 0; x<Simulation.jmax; x++)
+	{
+        segment1.data.copy(fluidData);
+		segment2.data.copy(fluidData);
+        
+		segment1.step();
+        segment2.step();
+        byte []data1 = segment1.data.getByteData();
+        byte []data2 = segment2.data.getByteData();
+        byte data[][] = new byte[2][data1.length];
+        data[0] = data1;
+        data[1] = data2;
+        fluidData.join(data);
+
+        segment1.data.copy(fluidData);
+		segment2.data.copy(fluidData);
+        
+		for( int x = 0; x<size*4; x++)
 		{
-			for( int y = 0; y<Simulation.imax; y++)
+			for( int y = 0; y<size*4; y++)
 			{
-				int r = (int)(Simulation.rhoOld[x][y]*255.0f);
+                int dx = (int)(255.0*(fluidData.getDensity(x/4,y/4)));
+			
+				int r = dx;// (int)(Simulation.rhoOld[x][y]*255.0f);
 				if (r>255) r = 255;
-				else if(r<0) r = 0;
 				
 				Color densColor = new Color(r, r, r);
-				image.setRGB(x,y,densColor.getRGB());
+				image.setRGB(x,y+30,densColor.getRGB());
 			}
 		}
-		for( int x = 0; x<Simulation.jmax; x+=16)
+		for( int x = 1; x<4*size; x+=8)
 		{
-			for( int y = 0; y<Simulation.imax; y+=16)
+			for( int y = 1; y<4*size; y+=8)
 			{
 				Graphics gd = image.createGraphics();
-				int dx = (int)(16*(Simulation.uOld[x][y])/Math.sqrt(Simulation.uOld[x][y]*Simulation.uOld[x][y]+Simulation.vOld[x][y]*Simulation.vOld[x][y]));
-				int dy = (int)(16*(Simulation.vOld[x][y])/Math.sqrt(Simulation.uOld[x][y]*Simulation.uOld[x][y]+Simulation.vOld[x][y]*Simulation.vOld[x][y]));
-				gd.drawLine(x,y,x+dy, y+dx);
+				int dx = (int)(80*(fluidData.getXVelocity((int)x/4,(int)y/4)));
+				int dy = (int)(80*(fluidData.getYVelocity((int)x/4,(int)y/4)));
+				//gd.drawLine(x,y,x+dx, y+dy);
 				gd.dispose();
 			}	
 		}
@@ -60,15 +77,11 @@ public class GUI extends JFrame
 	{
 		GUI gui = new GUI();
 		
-			for( int i=118; i<138; i++)
-				for( int j=220; j<240; j++)
+			for( int i=22; i<42; i++)
+				for( int j=22; j<42; j++)
 				{
-					Simulation.rhoOld[i][j] =Simulation.rhoNew[i][j] = 10f;
-				}
-			for( int i=118; i<138; i++)
-				for( int j=200; j<220; j++)
-				{
-					Simulation.uOld[i][j] = Simulation.uNew[i][j] = -0.02f;
+					gui.fluidData.setDensity(j,i,1f);
+                    
 				}
 				
 		while( true )
