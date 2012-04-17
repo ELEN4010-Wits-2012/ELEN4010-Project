@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
-import javax.swing.JProgressBar;
 import javax.swing.JButton;
 
 /**
@@ -58,7 +57,7 @@ public class MenuPanel extends JPanel implements ActionListener
     // ===Public Methods===
 
     /**
-     * Creates a new MenuPanel by accepting its dimensions and background color
+     * Creates a new MenuPanel by accepting its dimensions and background colour
      * @param panelDimension
      *             The dimensions of the menu panel
      * @param backgroundColor
