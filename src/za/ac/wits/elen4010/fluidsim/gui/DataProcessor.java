@@ -33,6 +33,8 @@ public class DataProcessor
     private Dimension captureDimensions;
     /** Stores the time in milli seconds between samples (set for 30hz sampling i.e. t = 1/30)*/
     private static final float SAMPLE_TIME = 1f / 30;
+    /** Stores the file writer used to generate input data for the server*/
+    private static FileWriter outputWriter;
 
     // ===Private Methods===
 
@@ -147,6 +149,7 @@ public class DataProcessor
         captureDimensions = screenDimensions;
         samplePoints = new Vector<SamplePoint>();
         velocities = new Vector<Velocity>();
+        outputWriter = new FileWriter( fileName );
 
     }
 
@@ -190,20 +193,31 @@ public class DataProcessor
      * tions to a file xOut.dat
      * @return A 3D array of floats representing the captured velocity x component
      */
-    public void getSimulationInput()
+    public void writeSimulationInput()
     {
 
+        if ( velocities.size() == 0 )
+        {
+            // CHANGE THIS TO A DIALOG!!
+            System.out.println( "No velocities loaded" );
+            return;
+        }
+
         ListIterator<Velocity> currentVelocity = velocities.listIterator();
-        List<float[][]> velocitySnapShots = new Vector<float[][]>();
         Velocity nextVelocity = currentVelocity.next();
         long startTime = nextVelocity.getSampleTime();
+        List<Velocity> sampling = new Vector<Velocity>();
         while ( currentVelocity.hasNext() )
         {
             nextVelocity = currentVelocity.previous();
             currentVelocity = getNextVelocity( currentVelocity, startTime );
             nextVelocity = currentVelocity.next();
+            sampling.add( nextVelocity );
             startTime = nextVelocity.getSampleTime();
         }
+
+        outputWriter.writeSimulationData( new SimulationInput( sampling ) );
+        return;
 
     }
 

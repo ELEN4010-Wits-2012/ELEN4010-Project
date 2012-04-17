@@ -27,7 +27,7 @@ public class SimulationInput implements Serializable
     private List<Velocity> frameByFrameInput;
 
     /** Stores an iterator to the next velocity to be taken from the vector of velocities*/
-    private ListIterator<Velocity> nextVelocity;
+    private ListIterator<Velocity> nextVelocity = null;
 
     // ===Public Methods===
 
@@ -41,7 +41,6 @@ public class SimulationInput implements Serializable
     {
 
         frameByFrameInput = new Vector<Velocity>( velocities );
-        nextVelocity = frameByFrameInput.listIterator();
 
     }
 
@@ -53,12 +52,27 @@ public class SimulationInput implements Serializable
     public Velocity nextVelocity()
     {
 
+        if ( nextVelocity == null )
+        {
+            nextVelocity = nextVelocity = frameByFrameInput.listIterator();
+            return nextVelocity.next();
+        }
+
         if ( nextVelocity.hasNext() )
         {
             return nextVelocity.next();
         }
 
         return null;
+
+    }
+
+    /** Simple toString override method*/
+    @Override
+    public String toString()
+    {
+
+        return "Simulation Input: " + frameByFrameInput;
 
     }
 

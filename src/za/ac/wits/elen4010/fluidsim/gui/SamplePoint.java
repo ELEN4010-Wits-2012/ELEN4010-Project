@@ -21,7 +21,7 @@ public class SamplePoint
     /** Stores the y coord of the sample in pixels*/
     private int yCoord;
     /** Stores the density value when the sample was taken*/
-    private short density;
+    private float density;
     /** 
      * Stores the timestamp for the sample in miliseconds (NOTE: the precision of this variable
      * varies with operating systems
@@ -38,7 +38,7 @@ public class SamplePoint
      * @param proposedYCoord Proposed value for the y coord of the sample in pixels
      * @param proposedTimeStamp Proposed time stamp value for the sample
      */
-    public SamplePoint( int proposedXCoord, int proposedYCoord, long proposedTimeStamp, short proposedDensity )
+    public SamplePoint( int proposedXCoord, int proposedYCoord, long proposedTimeStamp, float proposedDensity )
     {
 
         xCoord = proposedXCoord;
@@ -47,6 +47,16 @@ public class SamplePoint
         density = proposedDensity;
 
 
+
+    }
+
+    /** Simple function to get the density of a SamplePoint
+     * @return density of the SamplePoint
+     */
+    public float getDensity()
+    {
+
+        return density;
 
     }
 
@@ -103,7 +113,7 @@ public class SamplePoint
     public Velocity getVelocity( SamplePoint endPoint )
     {
 
-        return new Velocity( endPoint.getXCoord() - getXCoord(), endPoint.getYCoord() - getYCoord(), endPoint.getTimeStamp() - getTimeStamp(), endPoint.getTimeStamp(), getXCoord(), getYCoord() );
+        return new Velocity( endPoint.getXCoord() - getXCoord(), endPoint.getYCoord() - getYCoord(), endPoint.getTimeStamp() - getTimeStamp(), endPoint.getTimeStamp(), getXCoord(), getYCoord(), getDensity() );
 
     }
 

@@ -15,7 +15,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.lang.System;
 
 /**
  * The data panel is designed specifically to capture data in the form of
@@ -28,36 +27,36 @@ public class DataPanel extends JPanel implements MouseMotionListener, MouseListe
 {
 
     // ===Private Data Members===
-    /** Stores the dimen1sions of the panel*/
-    private Dimension windowSize;
+    /** Stores the dimensions of the panel*/
+    private static Dimension windowSize;
     /** Stores the state of the mouse clicker*/
-    private boolean clickerState;
+    private static boolean clickerState;
     /** Stores whether the mouse is inside or outside of the area in question*/
-    private boolean containedState;
+    private static boolean containedState;
     /** Stores the current density of the system. NOTE default value is 100*/
-    private short currentDensity = 100;
+    private static int currentDensity = Integer.MAX_VALUE / 2;
     /** Stores the time when the capturing was started*/
-    private long pausedStart;
+    private static long pausedStart;
     /** Stores the accumulated time spent paused*/
-    private long timePaused;
+    private static long timePaused;
     /** Stores the time that the simulation began*/
-    private long timeStart;
+    private static long timeStart;
     /** Stores whether or not the system is currently paused*/
-    private boolean capturePaused;
+    private static boolean capturePaused;
     /** Stores whether the window should still be open or not*/
-    private boolean captureData;
+    private static boolean captureData;
     /** Stores the 'Paused' label*/
-    private final JLabel pausedLabel = new JLabel( "Paused" );
+    private static final JLabel pausedLabel = new JLabel( "Paused" );
     /** Stores the maximum length of the progress bar*/
-    private static final short MAXIMUM_BAR_LENGTH = 255;
+    private static final int MAXIMUM_BAR_LENGTH = Integer.MAX_VALUE;
     /** Stores the minimum length of the progress bar*/
-    private static final short MINIMUM_BAR_LENGTH = 0;
+    private static final int MINIMUM_BAR_LENGTH = 0;
     /** Stores the change in density each time a plus or minus is captured*/
-    private static final short DENSITY_DELTA = 1;
+    private static final int DENSITY_DELTA = 10000000;
     /** Stores the progress bar which indicates the density of the simulation*/
-    private final JProgressBar densityLevel = new JProgressBar( MINIMUM_BAR_LENGTH, MAXIMUM_BAR_LENGTH );
+    private static final JProgressBar densityLevel = new JProgressBar( MINIMUM_BAR_LENGTH, MAXIMUM_BAR_LENGTH );
     /** Stores the data processor which handles samples and can return the required 3D arrays*/
-    private DataProcessor sampleProcessor;
+    private static DataProcessor sampleProcessor;
 
     // ===Private Methods===
 
@@ -247,7 +246,7 @@ public class DataPanel extends JPanel implements MouseMotionListener, MouseListe
             if ( containedState )
             {
                 //System.out.println( "Captured movement: " + dragged.getX() + ", " + dragged.getY() + ". Time = " + ( System.currentTimeMillis() - timePaused - timeStart ) );
-                SamplePoint eventSamplePoint = new SamplePoint( dragged.getX(), dragged.getY(), System.currentTimeMillis() - timePaused - timeStart, currentDensity );
+                SamplePoint eventSamplePoint = new SamplePoint( dragged.getX(), dragged.getY(), System.currentTimeMillis() - timePaused - timeStart, (float)currentDensity );
                 sampleProcessor.processNewSample( eventSamplePoint );
             }
         }
