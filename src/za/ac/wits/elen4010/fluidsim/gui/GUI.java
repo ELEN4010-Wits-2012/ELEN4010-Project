@@ -82,10 +82,6 @@ class GUI
         while ( mouseCapturePanel.getExecutionState() )
         {}
 
-        //programDataProcessor.printArrays();
-        float[][][] temp = programDataProcessor.getXVelocityInput();
-        //System.out.println( "======\n" + Arrays.deepToString( temp ) );
-
         System.exit( 0 );
 
     }

@@ -21,6 +21,8 @@ public class DataProcessor
 
     // ===Private Data Members===
 
+    /** Stores the name of the output file for input to the MPI program*/
+    private static final String fileName = "In.dat";
     /** Stores the buffer of sample points*/
     private List<SamplePoint> samplePoints;
     /** Stores the buffer of velocities*/
@@ -184,10 +186,11 @@ public class DataProcessor
     }
 
     /**
-     * Generates the three dimensional array of xVelocities with 30Hz sampling snapshots of their positions
+     * Streams the three dimensional array of xVelocities with 30Hz sampling snapshots of their posi-
+     * tions to a file xOut.dat
      * @return A 3D array of floats representing the captured velocity x component
      */
-    public float[][][] getXVelocityInput()
+    public void getSimulationInput()
     {
 
         ListIterator<Velocity> currentVelocity = velocities.listIterator();
@@ -200,10 +203,7 @@ public class DataProcessor
             currentVelocity = getNextVelocity( currentVelocity, startTime );
             nextVelocity = currentVelocity.next();
             startTime = nextVelocity.getSampleTime();
-            velocitySnapShots.add( generateInputFrame( nextVelocity.getXComponent(), (int)nextVelocity.getXCoordinate(), (int)nextVelocity.getYCoordinate() ) );
         }
-
-        return repackFloatMatrixList( velocitySnapShots );
 
     }
 

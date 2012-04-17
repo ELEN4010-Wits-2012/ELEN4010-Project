@@ -87,13 +87,13 @@ public class SamplePoint
      * Simple function to generate a plain coord from a SamplePoint (i.e. discard the time info-
      * rmation
      * @return coord A coord generated from the information stored inside the SamplePoint
-     */
+     *//*
     public Coord getCoord()
     {
 
         return new Coord( xCoord, yCoord );
 
-    }
+    }*/
 
     /**
      * Function to return the velocity of movement between two SamplePoints
