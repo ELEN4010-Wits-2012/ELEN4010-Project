@@ -9,12 +9,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Responsible for accepting objects of type {@link SimulationInput SimulationInput} and writing the-
- * m to the specified file
+ * Responsible for accepting objects and printing them to the output file specified. In the
+ * {@link GUI GUI} it handles writing of type {@link SimulationInput SimulationInput} and writing th-
+ * em to the specified file
  * @author Edward Steere
  * @see SimulationInput
  */
-public class FileWriter
+public class FileWriter<T>
 {
 
     // ===Private Data Members===
@@ -74,12 +75,11 @@ public class FileWriter
     }
 
     /**
-     * Accepts a SimulationInput object and writes it to the end of the {@link outFile outFile} str-
-     * eam
+     * Accepts an object and writes it to the end of the {@link outFile outFile} stream
      * @param inputData
      *             A SimulationInput object to be written to the file
      */
-    public void writeSimulationData( SimulationInput inputData )
+    public void writeSimulationData( T inputData )
     {
 
         try

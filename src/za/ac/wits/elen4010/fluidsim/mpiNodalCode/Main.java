@@ -1,5 +1,13 @@
 package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 
+/**
+ * @Author Rudolf Hoehler
+ * @Author Graham Peyton
+ *
+ * mpiexec -n 3 java Main
+
+*/
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Formatter;

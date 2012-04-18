@@ -4,6 +4,7 @@ import java.io.*;
 
 class Data implements Serializable
 {  
+<<<<<<< HEAD
     /**
      * 
      */
@@ -11,6 +12,11 @@ class Data implements Serializable
     private float density[][];
     private float uVelocity[][];
     private float vVelocity[][];
+=======
+
+	private static final long serialVersionUID = -7811642495385252127L;
+	private int data[][];
+>>>>>>> 191467cd4826d927cda911ff466165ccce60002a
     private int yLength;
     private int xLength;
     private int Rank ;
@@ -57,6 +63,7 @@ class Data implements Serializable
     {
         return uVelocity;
     }
+<<<<<<< HEAD
     public float[][] getvVelocity()
     {
         return vVelocity;
@@ -72,4 +79,15 @@ class Data implements Serializable
 
 
 
+=======
+    
+    public int getRank()
+    {
+    	return -1;
+    }
+    public void setRank(int rank)
+    {
+    	
+    }
+>>>>>>> 191467cd4826d927cda911ff466165ccce60002a
 }

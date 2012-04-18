@@ -46,7 +46,7 @@ class GUI
     /** Stores the name of the file that should be used to read data to the program*/
     private static final String FILE_NAME = "out.dat";
     /** Stores the file reader that should be used to render each frame*/
-    private static FileReader inputReader;
+    private static FileReader<RawFrame> inputReader;
     // /** Stores the maximum number of threads that the GUI can handle at any given time*/
     // private final static int MAXIMUM_THREADS = 8;
     // /** Stores the java Executor which handles the threads to be called*/
@@ -93,6 +93,12 @@ class GUI
     /** Activates the visualisation panel*/
     private static void activateVisualisationPanel()
     {
+
+        if ( inputReader == null )
+        {
+            System.err.println( "Couldn't bind to input file" );
+            return;
+        }
 
         displayFrame.setVisible( false );
         displayFrame.getContentPane().remove( menuPanel );
@@ -196,6 +202,12 @@ class GUI
     private static void visualisationLoop()
     {
 
+        if ( inputReader == null )
+        {
+            System.out.println( "Couldn't bind input file" );
+            return;
+        }
+
         long startTime = System.currentTimeMillis();
         RawFrame nextFrame = inputReader.readNextFrame();
         while( nextFrame != null )
@@ -218,7 +230,7 @@ class GUI
     public static void main( String[] Arguments )
     {
 
-        inputReader = new FileReader( FILE_NAME );
+        inputReader = new FileReader<RawFrame>( FILE_NAME );
         setupWindow();
         activateMenuPanel( null );
         while( true )
