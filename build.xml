@@ -1,5 +1,5 @@
 <project name="Fluid" default="run" basedir=".">
-    <property name="dir.src" value="src"/>
+    <property name="dir.src" value="src/za/ac/wits/elen4010/fluidsim"/>
     <property name="dir.build" value="build"/>
     <property name="dir.bin" value="bin"/>
 
@@ -11,7 +11,7 @@
         <javac srcdir="${dir.src}" destdir="${dir.build}"/>
     </target>
 
-    <target name="fluid" depends="compile">
+    <target name="run" depends="compile">
         <java dir="${dir.build}" classpath="./build" classname="za.ac.wits.elen4010.fluidsim.sim.GUI" fork="true"/>
     </target>
 
