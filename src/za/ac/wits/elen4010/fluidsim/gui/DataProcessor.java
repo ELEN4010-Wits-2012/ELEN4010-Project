@@ -34,7 +34,7 @@ public class DataProcessor
     /** Stores the time in milli seconds between samples (set for 30hz sampling i.e. t = 1/30)*/
     private static final float SAMPLE_TIME = 1f / 30;
     /** Stores the file writer used to generate input data for the server*/
-    private static FileWriter outputWriter;
+    private static FileWriter<SimulationInput> outputWriter;
 
     // ===Private Methods===
 
@@ -149,7 +149,7 @@ public class DataProcessor
         captureDimensions = screenDimensions;
         samplePoints = new Vector<SamplePoint>();
         velocities = new Vector<Velocity>();
-        outputWriter = new FileWriter( fileName );
+        outputWriter = new FileWriter<SimulationInput>( fileName );
 
     }
 

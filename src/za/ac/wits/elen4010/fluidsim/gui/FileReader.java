@@ -10,12 +10,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * Respondible for streaming frames from the output of the simulation and passing them onto the main
- * program as RawFrames
+ * Respondible for streaming objects from a file to a super process to use them for some purpose. In
+ * the GUI it's used for straeming {@link RawFrame RawFrames} to the super program
  * @author Edward Steere
  * @see RawFrame
  */
-public class FileReader
+public class FileReader<T>
 {
 
     // ===Private Data Members===
@@ -73,16 +73,15 @@ public class FileReader
     }
 
     /**
-     * Gets the next frame of data as a {@link RawFrame RawFrame} and returns it to the calling pro-
-     * cedure
-     * @return The next frame of data stored in the file
+     * Gets the next object from the file as the Type defined when making the class
+     * @return The next object to be read from the file
      */
-    public RawFrame readNextFrame()
+    public T readNextFrame()
     {
 
         try
         {
-            return ( RawFrame )inFile.readObject();
+            return ( T )inFile.readObject();
         }
         catch( IOException couldntReadNextFrameFromFile )
         {
