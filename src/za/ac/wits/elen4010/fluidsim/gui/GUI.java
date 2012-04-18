@@ -31,6 +31,8 @@ class GUI
     private static DataPanel mouseCapturePanel;
     /** Stores the panel which will be used to make menu options available*/
     private static MenuPanel menuPanel;
+    /** Stores the panel which will be used to display the results of the computation*/
+    private static GraphicalPanel visualisationPanel;
     /** Name of the main window*/
     private final static String APPLICATION_NAME = "Fluidation";
     /** Dimensions of main screen*/
@@ -40,7 +42,11 @@ class GUI
     /** Stores the amount of time (in milliseconds) that the application should wait before polling the state of a subframe*/
     private final static int MAIN_THREAD_WAIT_TIME = 100;
     /** Stores the program programs data processor to be used in every data capture session*/
-    private static DataProcessor programDataProcessor = new DataProcessor( APPLICATION_DIMENSIONS );;
+    private static DataProcessor programDataProcessor = new DataProcessor( APPLICATION_DIMENSIONS );
+    /** Stores the name of the file that should be used to read data to the program*/
+    private static final String FILE_NAME = "out.dat";
+    /** Stores the file reader that should be used to render each frame*/
+    private static FileReader inputReader;
     // /** Stores the maximum number of threads that the GUI can handle at any given time*/
     // private final static int MAXIMUM_THREADS = 8;
     // /** Stores the java Executor which handles the threads to be called*/
@@ -64,6 +70,14 @@ class GUI
 
     }
 
+    /** Sets up the {@link GraphicalPanel GraphicalPanel} to be addedd to the window*/
+    private static void setupVisualisationPanel()
+    {
+
+        visualisationPanel = new GraphicalPanel( APPLICATION_DIMENSIONS, APPLICATION_PANEL_COLOUR );
+
+    }
+
     /** Sets up the window to make the GUI visible*/
     private static void setupWindow()
     {
@@ -72,6 +86,19 @@ class GUI
         displayFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         setupMenuPanel();
         setupCapturePanel();
+        setupVisualisationPanel();
+
+    }
+
+    /** Activates the visualisation panel*/
+    private static void activateVisualisationPanel()
+    {
+
+        displayFrame.setVisible( false );
+        displayFrame.getContentPane().remove( menuPanel );
+        displayFrame.getContentPane().add( visualisationPanel );
+        displayFrame.pack();
+        displayFrame.setVisible( true );
 
     }
 
@@ -83,7 +110,7 @@ class GUI
         displayFrame.getContentPane().remove( menuPanel );
         displayFrame.getContentPane().add( mouseCapturePanel );
         displayFrame.pack();
-        displayFrame.setVisible( true );        
+        displayFrame.setVisible( true );  
 
     }
 
@@ -106,7 +133,6 @@ class GUI
 
     }
 
-
     /** Listening loop for Menu*/
     private static void menuLoop()
     {
@@ -128,6 +154,13 @@ class GUI
         {
             activateDataPanel();
             dataLoop();
+            return;
+        }
+
+        if ( selectedOption == MenuActions.VISUALISE )
+        {
+            activateVisualisationPanel();
+            visualisationLoop();
             return;
         }
 
@@ -159,6 +192,23 @@ class GUI
 
     }
 
+    /** Rendering loop for visualisation*/
+    private static void visualisationLoop()
+    {
+
+        long startTime = System.currentTimeMillis();
+        RawFrame nextFrame = inputReader.readNextFrame();
+        while( nextFrame != null )
+        {
+            while ( System.currentTimeMillis() - startTime < 33 )
+            {}
+            startTime = System.currentTimeMillis();
+            visualisationPanel.setImage( nextFrame );
+            nextFrame = inputReader.readNextFrame();
+        }
+
+    }
+
     // ===Public Methods===
 
     /**
@@ -168,6 +218,7 @@ class GUI
     public static void main( String[] Arguments )
     {
 
+        inputReader = new FileReader( FILE_NAME );
         setupWindow();
         activateMenuPanel( null );
         while( true )
