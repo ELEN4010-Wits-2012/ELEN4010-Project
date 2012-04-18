@@ -1,4 +1,4 @@
-// InteractivePanel.java
+package za.ac.wits.elen4010.fluidsim.gui;
 
 /**
  * Defines an interface for all interactive panels in the program. The responsibilities of all Inte-

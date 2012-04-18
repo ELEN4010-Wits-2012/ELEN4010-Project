@@ -7,7 +7,6 @@ package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
  * mpiexec -n 3 java Main
 
 */
-package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

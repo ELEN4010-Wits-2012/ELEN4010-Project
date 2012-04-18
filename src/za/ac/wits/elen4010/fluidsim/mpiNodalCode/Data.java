@@ -1,15 +1,10 @@
 package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
-<<<<<<< HEAD
-=======
 
->>>>>>> 5aa0af3559b96534d77f710b04755008fa4cb79c
 import java.io.*;
 
 class Data implements Serializable
 {  
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -7811642495385252127L;
 	private int data[][];
     private int yLength;
@@ -48,5 +43,12 @@ class Data implements Serializable
         return data;
     }
     
-
+    public int getRank()
+    {
+    	return -1;
+    }
+    public void setRank(int rank)
+    {
+    	
+    }
 }
