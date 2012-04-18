@@ -1,35 +1,45 @@
 package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
-<<<<<<< HEAD
-=======
 
->>>>>>> 5aa0af3559b96534d77f710b04755008fa4cb79c
 import java.io.*;
 
 class Data implements Serializable
 {  
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -7811642495385252127L;
-	private int data[][];
+     * 
+     */
+    private static final long serialVersionUID = -7811642495385252127L;
+    private float density[][];
+    private float uVelocity[][];
+    private float vVelocity[][];
     private int yLength;
     private int xLength;
+    private int Rank ;
+    
 
 
-    public Data(int array[][])
+    public void  setData(float d[][],float uVel[][],float vVel[][], int rank )
     {
+        
+        
+        
         // Initialise dimensions
-        yLength = array.length;
-        xLength = array[0].length;
-    	
+        yLength = d.length;
+        xLength = d[0].length;
+        Rank = rank ;
         // Allocate memory for the array copy
-        data = new int[yLength][xLength];
-    	   	
+        density = new float[yLength][xLength];
+        uVelocity = new float[yLength][xLength];
+        vVelocity = new float[yLength][xLength];
+        
+       
         // Create and store a COPY of the array locally
         for (int y = 0; y != yLength; y++)
             for (int x = 0; x != xLength; x++)
-                data[y][x] = array[y][x];
-    	
+            {
+                density[y][x] = d[y][x];
+                uVelocity[y][x] = uVel[y][x];
+                vVelocity[y][x] =vVel[y][x];
+            }
  
     }     
     
@@ -43,10 +53,23 @@ class Data implements Serializable
         return yLength;
     }
     
-    public int[][] getDataArray()
+    public float[][] getuVelocity()
     {
-        return data;
+        return uVelocity;
     }
-    
+    public float[][] getvVelocity()
+    {
+        return vVelocity;
+    }
+    public float[][] getDensity()
+    {
+        return density;
+    }
+    public int getRank()
+    {
+        return Rank;
+    }
+
+
 
 }

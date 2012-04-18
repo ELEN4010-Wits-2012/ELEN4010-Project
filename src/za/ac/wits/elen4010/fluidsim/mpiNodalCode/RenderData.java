@@ -15,6 +15,10 @@ public class RenderData implements Serializable
     private float[][] density;
     /** Rank of slave node that owns this strip */
     private int sourceRank;
+    /** Stores the x-length of the array */
+    private int xLength;
+    /** Stores the y-Length of the array */
+    private int yLength;
     
     /** 
      * Constructor, makes a copy of arrays to transport.
@@ -31,8 +35,20 @@ public class RenderData implements Serializable
                 this.density[x][y] = density[x][y];
             }
         }
- 
-    }     
+        yLength = density.length;
+        xLength = density[0].length;
+    }
+    
+    /**
+     * Default constructor
+     */
+    public RenderData()
+    {
+        this.density = new float[0][];
+        this.sourceRank = 0;
+        this.xLength = 0;
+        this.yLength = 0;
+    }
     
     public float[][] getDensity()
     {
@@ -47,5 +63,15 @@ public class RenderData implements Serializable
     public void setSourceRank( int rank )
     {
         this.sourceRank = rank;
+    }
+    
+    public int getXLength()
+    {
+        return xLength;
+    }
+    
+    public int getYLength()
+    {
+        return yLength;
     }
 }

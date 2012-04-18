@@ -9,7 +9,9 @@ public class MessagingTags {
 	static final int BoundryInfo_FromNeighbourBelow = 61 ;
 	static final int BoundryINfo_ToNeighbourBelow = 62 ;
 	static final int BoundryInfo_FromNeighbourAbove = 62 ;
+	static final int RenderDataFromSlave = 71;
 	
 	static final int DefaultHostandRankMsgLength = 50;
+	static final int SingleObjectLength = 1;
 
 }
