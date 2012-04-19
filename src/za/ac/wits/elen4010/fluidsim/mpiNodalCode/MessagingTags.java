@@ -7,7 +7,7 @@ public class MessagingTags {
 	static final int Initialcondition_FromServer= 52;
 	static final int BoundryInfo_ToNeighbourAbove = 61 ;
 	static final int BoundryInfo_FromNeighbourBelow = 61 ;
-	static final int BoundryINfo_ToNeighbourBelow = 62 ;
+	static final int BoundryInfo_ToNeighbourBelow = 62 ;
 	static final int BoundryInfo_FromNeighbourAbove = 62 ;
 	static final int RenderDataFromSlave = 71;
 	

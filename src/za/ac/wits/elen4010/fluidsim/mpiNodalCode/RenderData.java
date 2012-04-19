@@ -35,19 +35,8 @@ public class RenderData implements Serializable
                 this.density[x][y] = density[x][y];
             }
         }
-        yLength = density.length;
-        xLength = density[0].length;
-    }
-    
-    /**
-     * Default constructor
-     */
-    public RenderData()
-    {
-        this.density = new float[0][];
-        this.sourceRank = 0;
-        this.xLength = 0;
-        this.yLength = 0;
+        xLength = density.length;
+        yLength = density[0].length;
     }
     
     public float[][] getDensity()

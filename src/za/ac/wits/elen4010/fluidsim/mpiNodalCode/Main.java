@@ -45,14 +45,16 @@ class Main
     /** Rank of the current process */
     int myrank = MPI.COMM_WORLD.Rank() ;
     /** Size of the communicator */
-    int p = MPI.COMM_WORLD.Size() ;
+    int p = MPI.COMM_WORLD.Size();
+    /** Total number of simulation frames */
+    int frames = 2;
 
     if(myrank != 0)  // my_rank != 0 => slave node
     {
         try 
         {   //create a slave node
-            SlaveNode LocalSlave = new SlaveNode(myrank, InetAddress.getLocalHost().getHostName().toString());
-            LocalSlave.run();
+            SlaveNode LocalSlave = new SlaveNode(myrank, p);
+            LocalSlave.run( frames );
         
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
@@ -66,7 +68,7 @@ class Main
     else  // my_rank == 0 => master node
     {  
         MainNode mainNode = new MainNode();
-        mainNode.run();
+        mainNode.run( frames );
     }
  
     MPI.Finalize();

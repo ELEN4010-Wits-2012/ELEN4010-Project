@@ -29,7 +29,7 @@ public class Fluid
     int numGaussSeidelIter = 2;
 
     float[] viscosity;
-    float[][] densityOld;
+    public float[][] densityOld;            // Remember to remove the public after testing
     float[][] densityNew;
     float[][] tmp;
     float[][] uVelocityOld;
