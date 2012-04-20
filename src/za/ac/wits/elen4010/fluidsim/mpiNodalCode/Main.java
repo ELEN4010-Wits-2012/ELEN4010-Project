@@ -20,61 +20,55 @@ import java.lang.*;
 import java.net.*;
 import java.io.*;
 import java.text.*;
+
+import za.ac.wits.elen4010.fluidsim.sim.Fluid;
 import mpi.*;
 
+/** 
+ * Main MPI program
+ * 
+ * @author Graham Peyton
+ * @author Rudolf Hoehler
+ * 
+ */
 class Main
 {
-
-    
-
+    /**
+     * Main MPI method
+     */
     static public void main(String[] args) throws MPIException 
     {
       
-    /* Initialize MPI */
+    /** Initialize MPI */
     MPI.Init(args) ;
 
-    /*-=Variables=-*/
-    
-    //
-
+    /** Rank of the current process */
     int myrank = MPI.COMM_WORLD.Rank() ;
-    int p = MPI.COMM_WORLD.Size() ;
+    /** Size of the communicator */
+    int p = MPI.COMM_WORLD.Size();
+    /** Total number of simulation frames */
+    int frames = 2;
 
-    if(myrank != 0) 
-    {// Then I am I slave
-    	try 
-    	{
-			SlaveNode LocalSlave = new SlaveNode(myrank, InetAddress.getLocalHost().getHostName().toString());
-			LocalSlave.run();
-    	
-    	} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
-    else 
-    {  // my_rank == 0 and I am the master node
-
-    	MainNode mainNode = new MainNode();
+    if(myrank != 0)  // my_rank != 0 => slave node
+    {
+        try 
+        {   //create a slave node
+            SlaveNode LocalSlave = new SlaveNode(myrank, p);
+            LocalSlave.run( frames );
         
-    	
-    	int [][] TempDataSet;
-    	TempDataSet = new int[5][5];
-    	
-    	for (int i=0; i != 5; i++) {
-            for (int j=0; j != 5; j++)
-            {
-            	TempDataSet[i][j] = 0;
-            }
-         }
-    	
-    	mainNode.sendInitialConditions(TempDataSet, 1);
-    	mainNode.sendInitialConditions(TempDataSet, 2);
-	
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    
+    }
+    else  // my_rank == 0 => master node
+    {  
+        MainNode mainNode = new MainNode();
+        mainNode.run( frames );
     }
  
     MPI.Finalize();

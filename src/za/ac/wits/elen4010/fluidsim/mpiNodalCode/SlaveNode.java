@@ -7,155 +7,250 @@ import java.lang.reflect.Array;
 import java.net.*;
 import java.util.Arrays;
 
+import za.ac.wits.elen4010.fluidsim.sim.*;
+import za.ac.wits.elen4010.fluidsim.sim.Fluid.Side;
+import za.ac.wits.elen4010.fluidsim.gui.*;
 
+/**
+ * Class representing the slave node
+ * 
+ * @author Graham Peyton
+ * @author Rudolf Hoehler
+ * 
+ */
 public class SlaveNode 
 {
-    /*Variables*/
-    //Environment Variables
+    /* ---- Variables ----*/
+    /** Rank of the current process */
     int MyRank ;
+    /** Rank of the master node */
     final  int HostRank = 0 ;
-    int msgAddrsNeighbourAbove, msgAddrsNeighbourBelow;
+    /** Size of the entire communicator */
+    int commSize = 0;
+    /** Local fluid object */
+    private Fluid fluid ;
     
-    //Local factories,container and storage classes
+    /** Stores messaging tags */
     MessagingTags tags ;
-    NeighboursData neighbourData[] = new NeighboursData[1] ;
-    
-    
-    String myHost = new String();
-    
+    /** Bollean stored initialisation state of host */
     Boolean hostInitialised = false;
-    
+    /** What does this do? */
     int[][] LocalDatacopy ;
 
-
-   public SlaveNode( int slaveNodeRank,String slaveNodeHost )
-   {
+    /** 
+     * Slave node constructor
+     * @param slaveNodeRank The rank of the current slave process
+     * @param p The size of the entire communicator
+     */
+    public SlaveNode( int slaveNodeRank, int p )
+    {
 	   if (slaveNodeRank != 0)
 	   {
-		   MyRank = slaveNodeRank ;
-		   myHost = slaveNodeHost;
-		   neighbourData[0] = new NeighboursData();
-		   try {
-			initialiseNode();
-		} catch (MPIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	       this.commSize = p;
+	       MyRank = slaveNodeRank ;
+		   
+	       try 
+	       {
+		       initialiseNode();
+		   } 
+		   catch (MPIException e) 
+		   {
+		       // TODO Auto-generated catch block
+		       e.printStackTrace();
+		   }
 	   }
 	   else
 	   {
 		//throw exception log error   
 	   }
-	   
-
-   
-   
    }
     
-   // Primary goal here is to call home with Rank+Host and receive neighbours list + initial conditions.
+   /** 
+    * Function to initialise fluid object handled by slave node
+    * @throws MPIException
+    */
    public void initialiseNode() throws MPIException
    {
-	
-	   // a host may only be initialised once. If the main node is not listening for the message then the porgram will be blocked after the fist send.
-	   if (hostInitialised == false)
-		{   
-			
-			char[] message = null ;
-			//The "?" will be used later to help with string manipulation
-			message = ("?" + myHost + "?" + Integer.toString(MyRank) + "?" ).toCharArray();
-			//System.out.println(message);
-			
-			// Contact MainNode with Thread Rank and Host.   
-		   	MPI.COMM_WORLD.Send(message, 0, message.length, MPI.CHAR,HostRank, MessagingTags.HostAndRank_ToServer);
-		   	
-		    //Block here and wait to receive Neighbour's Ranks
-		   	System.out.println(new String(message) + " is waiting to recieve!");
-		   	MPI.COMM_WORLD.Recv(neighbourData, 0, 1, MPI.OBJECT, HostRank, MessagingTags.Neighbours_FromServer);
-		   	
-		   	msgAddrsNeighbourAbove = neighbourData[0].NeighbourAbove ;
-		   	msgAddrsNeighbourBelow = neighbourData[0].NeighbourBelow ;
-		   	System.out.println("Above: "+ msgAddrsNeighbourAbove + " Below: " + msgAddrsNeighbourBelow);
-		   	//Block here and wait to receive initial conditions
-		  
-		   	Data tempData[] = new Data[1];
-		   	int[][] dummy;
-		   	dummy = new int[5][5];
-	    	//This seems stupid - Graham? Thoughts? If i didn't mention this over the phone message me
-	    	tempData[0] = new Data(dummy);
-		   	MPI.COMM_WORLD.Recv(tempData, 0, 1, MPI.OBJECT, HostRank, MessagingTags.Initialcondition_FromServer);
-		   	
-		   	LocalDatacopy = new int[tempData[0].getDataArray().length][tempData[0].getDataArray()[0].length];
-		   
-		   	hostInitialised = true;
+       if (hostInitialised == false)
+       {   
+            System.out.println("Initialising fluid for process rank " + MyRank); 
+            if (MyRank == 1)                                            // Top Strip
+            	fluid = new Fluid( 0, 100, 20, 300, true, false );      // ############## HARD CODED ###############
+            else if (MyRank == commSize-1)                              // Bottom Strip
+            	fluid = new Fluid( 0, 100, 20, 300, false, true );      // ############## HARD CODED ###############
+            else                                                        // Middle strip
+                fluid = new Fluid( 0, 100, 20, 300, false, false );     // ############## HARD CODED ###############
+            
+            // Array to store user input objects	   	
+            SimulationInput[] initialConditions = new SimulationInput[1];
+            // Receive initial conditions
+            MPI.COMM_WORLD.Recv(initialConditions, 0, 1, MPI.OBJECT, HostRank, MessagingTags.Initialcondition_FromServer);
+            System.out.println("Recieved IC to process rank " + MyRank);		
+            
+            // Initialise the Fluid object
+            // XXXXXXXXXX ADD CODE HERE TO INITIALSE THE FLUID OBJECT XXXXXXXXXXX
+            // fluid.setUserInput(initialConditions);
+            // For now, just set the density as follows:
+            for ( int j = 50; j < 90; j++ )
+                for ( int i = 10; i < 53; i++ )
+                    fluid.densityOld[j][i] = 20f;
+            
+            hostInitialised = true;
 		}
-	   
-   	
    }
    
-   public void run () throws IOException, MPIException
+   /**
+    * Main program loop on the slave node
+    * @throws IOException
+    * @throws MPIException
+    */
+   public void run ( int frames ) throws IOException, MPIException
    {
-	   int[] tempRow;
-	   tempRow = new int[5] ;
-	   //Three cases of IF. 1) if I am the first row - above = 0, 2) if I am the last row below = 0, 3) if I am row inbetween.
-	   if (msgAddrsNeighbourAbove == 0) //I am on top
+       System.out.println("Running slave process rank " + MyRank);
+       
+       if (MyRank == 1) //I am on top
 	   {
-		   //calculate, then send, then receive and hold
-		   for(int a = 0; a <9 ; a++)
-		   {
-			   LocalDatacopy[4] = tempRow ;
-			   //Increment First Row
-			   for(int j = 0; j != LocalDatacopy[0].length;j++)
-			   {
-			   	LocalDatacopy[0][j]++;
-			   }
-
-			   for(int j = 0; j != 50;j++)
-			   {
-				   System.out.println("");
-			   }
-
-			   
-			   System.out.println(Arrays.toString(LocalDatacopy[0]));
-			   System.out.println(Arrays.toString(LocalDatacopy[1]));
-			   System.out.println(Arrays.toString(LocalDatacopy[2]));
-			   System.out.println(Arrays.toString(LocalDatacopy[3]));
-			   System.out.println(Arrays.toString(LocalDatacopy[4]));
-		
-			  
-			   try 
-			   {
-				Thread.sleep(500);
-			   } catch (InterruptedException e) 
-			   {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			   }
-			   
-			   MPI.COMM_WORLD.Send(LocalDatacopy[4], 0, 5, MPI.INT, msgAddrsNeighbourBelow, MessagingTags.BoundryInfo_FromNeighbourAbove);
-			   MPI.COMM_WORLD.Recv(tempRow, 0, 5, MPI.INT,msgAddrsNeighbourBelow, MessagingTags.BoundryInfo_FromNeighbourAbove);
-		   }
-		   
-		   
+			for ( int i = 0; i != frames; i++ )
+			{
+                int step = i+1;
+                System.out.println("Stepping top strip: " + step);
+                stepTopProcess();
+			}
+			    
 	   }
-	   else if (msgAddrsNeighbourBelow == 0)//I am at the bottom
-	   {   //receive, then calculate and send
-		   for(int a = 0; a <9 ; a++)
-		   {
-			   MPI.COMM_WORLD.Recv(tempRow, 0, 5, MPI.INT, msgAddrsNeighbourAbove, MessagingTags.BoundryInfo_FromNeighbourAbove);
-			   
-			   for(int j = 0; j != tempRow.length;j++)
-			   {
-				   tempRow[j]++;
-			   }
-			   
-			   MPI.COMM_WORLD.Send(tempRow, 0, 5, MPI.INT, msgAddrsNeighbourAbove, MessagingTags.BoundryInfo_FromNeighbourAbove);
-	  
-		   }
+	   else if (MyRank == commSize-1) // I am at the bottom
+	   {   
+           for ( int i = 0; i != frames; i++ )
+           {
+               int step = i+1;
+               System.out.println("Stepping bottom strip: " + step);
+               stepBottomProcess();
+           }
+	            
 	   }
-	   else
+	   else // I am a middle strip
 	   {
-		   //the code for above and below goes here
+	       for ( int i = 0; i != frames; i++ )
+	       {
+	           if ( MyRank % 2 == 0 ) // My Rank is even
+	           {
+	               int step = i+1;
+	               System.out.println("Stepping centre even strip: " + step);
+	               stepEvenProcess();
+	           }
+	               
+	           else                   // My Rank is odd
+	           {
+	               int step = i+1;
+	               System.out.println("Stepping centre odd strip: " + step);
+	               stepOddProcess();
+	           }   
+	       }
 	   }
    }
+   
+   /**
+    * Sends RenderData objects back to the master
+    * 
+    */
+   private void sendRenderData() throws MPIException
+   {
+        // This step could also be done after calculating all frames
+        RenderData[] tempOut = new RenderData[1];
+        tempOut[0] = fluid.getRenderData();
+        tempOut[0].setSourceRank( MyRank );
+        MPI.COMM_WORLD.Send( tempOut, 0, 1, MPI.OBJECT, HostRank, MessagingTags.RenderDataFromSlave );
+   }
+   
+   /**
+    * Steps the top process
+    * @throws MPIException
+    */
+   private void stepTopProcess() throws MPIException
+   {
+       EdgeData[] edge = new EdgeData[1];
+       
+       // calculate, send to master node
+       fluid.step();  
+       sendRenderData();
+       
+       // Send local boundary conditions
+       edge[0] = fluid.getEdge( Side.BOTTOM );
+       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
+       
+       // Receive local boundary conditions and set overlap
+       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       fluid.setOverlap( edge[0] , Side.BOTTOM);  
+       System.out.println("Top sent/received edges");
+   }
+   
+   /**
+    * Steps the bottom process by one iteration
+    * @throws MPIException
+    */
+   private void stepBottomProcess() throws MPIException
+   {
+       EdgeData[] edge = new EdgeData[1];
+       
+       // Calculate, send to master node
+       fluid.step();
+       sendRenderData();
+       
+       // Receive boundary conditions and set fluid overlap
+       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT,MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
+       fluid.setOverlap( edge[0] , Side.TOP);
+       
+       // Send Boundary Conditions 
+       edge[0] = fluid.getEdge( Side.TOP );
+       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
+       System.out.println("Bottom sent/received edges");
+   }
+   
+   /**
+    * Steps a centre even process
+    * @throws MPIException 
+    */
+   private void stepEvenProcess() throws MPIException
+   {
+       EdgeData[] edge = new EdgeData[1];
 
+       // Calculate, send to master node
+       fluid.step();
+       sendRenderData();
+       
+       // ======= Send below, receive above, send above, receive below =======
+       edge[0] = fluid.getEdge( Side.BOTTOM );
+       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
+       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
+       fluid.setOverlap( edge[0] , Side.TOP);
+       edge[0] = fluid.getEdge( Side.TOP );
+       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
+       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       fluid.setOverlap( edge[0] , Side.BOTTOM);
+       System.out.println("Centre even sent/received edges");
+   }
+   
+   /**
+    * Steps a centre odd process
+    * @throws MPIException
+    */
+   private void stepOddProcess() throws MPIException
+   {
+       EdgeData[] edge = new EdgeData[1];
+
+       // Calculate, send to master node
+       fluid.step();
+       sendRenderData();
+       
+       // ======= Receive above, send below, receive below, send above =======
+       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
+       fluid.setOverlap( edge[0] , Side.TOP);
+       edge[0] = fluid.getEdge( Side.BOTTOM );
+       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
+       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       fluid.setOverlap( edge[0] , Side.BOTTOM);
+       edge[0] = fluid.getEdge( Side.TOP );
+       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
+       System.out.println("Centre odd sent/received edges");
+   }
 }

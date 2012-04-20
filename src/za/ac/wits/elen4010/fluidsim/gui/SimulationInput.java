@@ -43,6 +43,11 @@ public class SimulationInput implements Serializable
         frameByFrameInput = new Vector<Velocity>( velocities );
 
     }
+    
+    public SimulationInput()
+    {
+        frameByFrameInput = new Vector<Velocity>(null);
+    }
 
     /**
      * Returns the next {@link Velocity Velocity} stored in the list of {@link Velocity Velocities}

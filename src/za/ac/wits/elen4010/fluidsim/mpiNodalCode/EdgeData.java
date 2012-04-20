@@ -49,18 +49,26 @@ public class EdgeData implements Serializable
         }
  
     }
-    
-    
+ 
+    /**
+     * Get the density array
+     */
     public float[][] getDensity()
     {
         return density;
     }
     
+    /**
+     * Get the horizontal velocity array
+     */
     public float[][] getHorizontalVelocity()
     {
         return horizontalVelocity;
     }
 
+    /**
+     * Get the vertical velocity array
+     */
     public float[][] getVerticalVelocity()
     {
         return verticalVelocity;
