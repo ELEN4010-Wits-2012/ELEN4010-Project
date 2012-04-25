@@ -118,6 +118,31 @@ public class DataPanel extends JPanel implements MouseMotionListener, MouseListe
     }
 
     /**
+     * Resets the state of the DataPanel so that the main program can call a new data capture sessio-
+     * n
+     */
+    public void reset()
+    {
+
+        // Create alert dialog here to make sure the user wants to do this
+        boolean proceed = true;
+
+        if ( proceed )
+        {
+            sampleProcessor.reInitialise();
+            // Set the mouse to the state where it's outside the window and the clicker isn't down
+            clickerState = false;
+            containedState = false;
+            capturePaused = true;
+            captureData = true;
+            timeStart = System.currentTimeMillis();
+            pausedStart = timeStart;
+            timePaused = 0;
+        }
+
+    }
+
+    /**
      * Returns whether the simulation is still running or not
      * @return True if the simulation is still capturing data, else false
      */
@@ -144,7 +169,7 @@ public class DataPanel extends JPanel implements MouseMotionListener, MouseListe
     /**
      * Returns the preferred size of the window. In this case it's the same as the minimum size. i.e.
      * It is preferrable that the window be no size other than the specified one
-     * @return The prefered size of the window
+     * @return The preferred size of the window
      */
     public Dimension getPreferredSize()
     {

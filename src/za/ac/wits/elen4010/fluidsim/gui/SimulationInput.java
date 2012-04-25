@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 import java.util.ListIterator;
+import java.awt.Dimension;
 
 /**
  * Container class for the input of the simulation. Each input is represented as a Velocity which co-
@@ -26,6 +27,12 @@ public class SimulationInput implements Serializable
     /** List of vectors, represented in memory as a 'vector' data type*/
     private List<Velocity> frameByFrameInput;
 
+    /**
+     * Stores the dimension of the screen as defined at contruction and depending on the size of inp-
+     * ut screen in the GUI
+     */
+    private Dimension renderFrameDimensions;
+
     /** Stores an iterator to the next velocity to be taken from the vector of velocities*/
     private ListIterator<Velocity> nextVelocity = null;
 
@@ -36,17 +43,16 @@ public class SimulationInput implements Serializable
      * uld be used to populate the internal list of velocities
      * @param velocities
      *             The velocities which should be set to the internal list of Velocities
+     * @param inputScreenSize
+     *             The dimensions of the rendered screen
      */
-    public SimulationInput( List<Velocity> velocities )
+    public SimulationInput( List<Velocity> velocities, Dimension inputScreenSize )
     {
 
+        // DO ERROR CHECKING HERE!
         frameByFrameInput = new Vector<Velocity>( velocities );
+        renderFrameDimensions = inputScreenSize;
 
-    }
-    
-    public SimulationInput()
-    {
-        frameByFrameInput = new Vector<Velocity>(null);
     }
 
     /**
@@ -69,6 +75,34 @@ public class SimulationInput implements Serializable
         }
 
         return null;
+
+    }
+
+    /**
+     * Returns the length of number of input samples (i.e. the number of frames to be rendered
+     * @return The number of frames to be rendered
+     */
+    public int getFrameCount()
+    {
+
+        if ( frameByFrameInput == null )
+        {
+            return 0;
+        }
+
+        return frameByFrameInput.size();
+
+    }
+
+    /**
+     * Returns the dimensions of the screen so that other components receiving a simulation input ca-
+     * n determine  how large the rendering area shpuld be
+     * @return A Java 'Dimension' which has methods for getting the width and height of the screen
+     */
+    public Dimension getRenderingSize()
+    {
+
+        return renderFrameDimensions;
 
     }
 

@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.util.Arrays;
 //import java.util.concurrent.ExecutorService;
 //import java.util.concurrent.Executors;
@@ -35,8 +36,10 @@ class GUI
     private static GraphicalPanel visualisationPanel;
     /** Name of the main window*/
     private final static String APPLICATION_NAME = "Fluidation";
-    /** Dimensions of main screen*/
+    /** Dimensions of the capture and rendering screens*/
     private final static Dimension APPLICATION_DIMENSIONS = new Dimension( 640, 480 );
+    /** Dimensions of the menu panel*/
+    private final static Dimension MENU_DIMENSIONS = new Dimension( 300, 500 );
     /** Default colour for display and capture panels*/
     private final static Color APPLICATION_PANEL_COLOUR = Color.black;
     /** Stores the amount of time (in milliseconds) that the application should wait before polling the state of a subframe*/
@@ -47,6 +50,8 @@ class GUI
     private static final String FILE_NAME = "out.dat";
     /** Stores the file reader that should be used to render each frame*/
     private static FileReader<RawFrame> inputReader;
+    /** Insets for the display frame*/
+    private static Insets frameInsets;
     // /** Stores the maximum number of threads that the GUI can handle at any given time*/
     // private final static int MAXIMUM_THREADS = 8;
     // /** Stores the java Executor which handles the threads to be called*/
@@ -66,7 +71,7 @@ class GUI
     private static void setupMenuPanel()
     {
 
-        menuPanel = new MenuPanel( APPLICATION_DIMENSIONS, APPLICATION_PANEL_COLOUR );
+        menuPanel = new MenuPanel( MENU_DIMENSIONS, APPLICATION_PANEL_COLOUR );
 
     }
 
@@ -84,6 +89,8 @@ class GUI
 
         displayFrame = new JFrame( APPLICATION_NAME );
         displayFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        displayFrame.setResizable( false );
+        frameInsets = displayFrame.getInsets();
         setupMenuPanel();
         setupCapturePanel();
         setupVisualisationPanel();
@@ -94,16 +101,19 @@ class GUI
     private static void activateVisualisationPanel()
     {
 
-        if ( inputReader == null )
-        {
-            System.err.println( "Couldn't bind to input file" );
-            return;
-        }
-
         displayFrame.setVisible( false );
         displayFrame.getContentPane().remove( menuPanel );
         displayFrame.getContentPane().add( visualisationPanel );
         displayFrame.pack();
+        try
+        {
+            Thread.sleep( MAIN_THREAD_WAIT_TIME );
+        }
+        catch ( InterruptedException ExecutionPrematurelyInterrupted )
+        {
+            System.err.println( "Execution of the program was prematurely interrupted" );
+            ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+        }
         displayFrame.setVisible( true );
 
     }
@@ -113,9 +123,19 @@ class GUI
     {
 
         displayFrame.setVisible( false );
+        mouseCapturePanel.reset();
         displayFrame.getContentPane().remove( menuPanel );
         displayFrame.getContentPane().add( mouseCapturePanel );
         displayFrame.pack();
+        try
+        {
+            Thread.sleep( MAIN_THREAD_WAIT_TIME );
+        }
+        catch ( InterruptedException ExecutionPrematurelyInterrupted )
+        {
+            System.err.println( "Execution of the program was prematurely interrupted" );
+            ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+        }
         displayFrame.setVisible( true );  
 
     }
@@ -134,7 +154,16 @@ class GUI
             displayFrame.getContentPane().remove( activePanel );
         }
         displayFrame.getContentPane().add( menuPanel );
-        displayFrame.pack();
+        displayFrame.setSize( MENU_DIMENSIONS.width + frameInsets.left + frameInsets.right, MENU_DIMENSIONS.height + frameInsets.top + frameInsets.bottom );
+        try
+        {
+            Thread.sleep( MAIN_THREAD_WAIT_TIME );
+        }
+        catch ( InterruptedException ExecutionPrematurelyInterrupted )
+        {
+            System.err.println( "Execution of the program was prematurely interrupted" );
+            ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+        }
         displayFrame.setVisible( true );
 
     }
@@ -148,6 +177,15 @@ class GUI
 
         while ( menuListening )
         {
+            try
+            {
+                Thread.sleep( MAIN_THREAD_WAIT_TIME );
+            }
+            catch ( InterruptedException ExecutionPrematurelyInterrupted )
+            {
+                System.err.println( "Execution of the program was prematurely interrupted" );
+                ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+            }
             selectedOption = menuPanel.getProgramState();
             if ( selectedOption != MenuActions.LISTENING )
             {
@@ -189,10 +227,19 @@ class GUI
     {
 
         while ( mouseCapturePanel.getExecutionState() )
-        {}
+        {
+            try
+            {
+                Thread.sleep( MAIN_THREAD_WAIT_TIME );
+            }
+            catch ( InterruptedException ExecutionPrematurelyInterrupted )
+            {
+                System.err.println( "Execution of the program was prematurely interrupted" );
+                ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+            }
+        }
 
         activateMenuPanel( mouseCapturePanel );
-        menuLoop();
 
         return;
 
@@ -202,22 +249,30 @@ class GUI
     private static void visualisationLoop()
     {
 
-        if ( inputReader == null )
-        {
-            System.out.println( "Couldn't bind input file" );
-            return;
-        }
-
         long startTime = System.currentTimeMillis();
         RawFrame nextFrame = inputReader.readNextFrame();
         while( nextFrame != null )
         {
             while ( System.currentTimeMillis() - startTime < 33 )
-            {}
+            {
+                try
+                {
+                    Thread.sleep( MAIN_THREAD_WAIT_TIME );
+                }
+                catch ( InterruptedException ExecutionPrematurelyInterrupted )
+                {
+                    System.err.println( "Execution of the program was prematurely interrupted" );
+                    ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+                }      
+            }
             startTime = System.currentTimeMillis();
             visualisationPanel.setImage( nextFrame );
             nextFrame = inputReader.readNextFrame();
         }
+
+        activateMenuPanel( visualisationPanel );
+
+        return;
 
     }
 
@@ -235,6 +290,15 @@ class GUI
         activateMenuPanel( null );
         while( true )
         {
+            try
+            {
+                Thread.sleep( MAIN_THREAD_WAIT_TIME );
+            }
+            catch ( InterruptedException ExecutionPrematurelyInterrupted )
+            {
+                System.err.println( "Execution of the program was prematurely interrupted" );
+                ExecutionPrematurelyInterrupted.printStackTrace( System.err );
+            }
             menuLoop();
         }
 

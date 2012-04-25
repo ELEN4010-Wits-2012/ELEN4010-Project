@@ -46,6 +46,7 @@ public class FileReader<T>
         {
             System.err.println( "Couldn't open the simulation output file (the input file for this program)" );
             couldntOpenInputStream.printStackTrace( System.err );
+            inFile = null;
         }
     }
 
@@ -78,6 +79,11 @@ public class FileReader<T>
      */
     public T readNextFrame()
     {
+
+        if ( inFile == null )
+        {
+            return null;
+        }
 
         try
         {

@@ -216,7 +216,7 @@ public class DataProcessor
             startTime = nextVelocity.getSampleTime();
         }
 
-        outputWriter.writeSimulationData( new SimulationInput( sampling ) );
+        outputWriter.writeSimulationData( new SimulationInput( sampling, captureDimensions ) );
         return;
 
     }
