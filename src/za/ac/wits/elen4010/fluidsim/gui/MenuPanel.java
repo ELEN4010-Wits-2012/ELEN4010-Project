@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.UIManager;
 
 /**
  * The Menu panel is designed to allow the user to change the state of the program between capture a-
@@ -89,6 +90,11 @@ public class MenuPanel extends JPanel implements ActionListener
         // Use abolute positioning to place buttons with more ease
         setLayout( null );
 
+        // Change the button fore and back grounds
+        UIManager.put( "Button.background", Color.black );
+        UIManager.put( "Button.foreground", Color.white );
+
+        // Set up each of the buttons
         captureButton = new JButton( CAPTURE_TEXT );
         add( captureButton );
         captureButton.setBounds( LEFT_OFFSET + menuInsets.left, CAPTURE_VERTICAL_OFFSET + menuInsets.top, BUTTON_DIMENSION.width, BUTTON_DIMENSION.height );

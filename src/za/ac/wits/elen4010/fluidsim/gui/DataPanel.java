@@ -124,21 +124,15 @@ public class DataPanel extends JPanel implements MouseMotionListener, MouseListe
     public void reset()
     {
 
-        // Create alert dialog here to make sure the user wants to do this
-        boolean proceed = true;
-
-        if ( proceed )
-        {
-            sampleProcessor.reInitialise();
-            // Set the mouse to the state where it's outside the window and the clicker isn't down
-            clickerState = false;
-            containedState = false;
-            capturePaused = true;
-            captureData = true;
-            timeStart = System.currentTimeMillis();
-            pausedStart = timeStart;
-            timePaused = 0;
-        }
+        sampleProcessor.reInitialise();
+        // Set the mouse to the state where it's outside the window and the clicker isn't down
+        clickerState = false;
+        containedState = false;
+        capturePaused = true;
+        captureData = true;
+        timeStart = System.currentTimeMillis();
+        pausedStart = timeStart;
+        timePaused = 0;
 
     }
 

@@ -21,8 +21,6 @@ public class DataProcessor
 
     // ===Private Data Members===
 
-    /** Stores the name of the output file for input to the MPI program*/
-    private static final String fileName = "In.dat";
     /** Stores the buffer of sample points*/
     private List<SamplePoint> samplePoints;
     /** Stores the buffer of velocities*/
@@ -149,7 +147,6 @@ public class DataProcessor
         captureDimensions = screenDimensions;
         samplePoints = new Vector<SamplePoint>();
         velocities = new Vector<Velocity>();
-        outputWriter = new FileWriter<SimulationInput>( fileName );
 
     }
 
@@ -189,18 +186,17 @@ public class DataProcessor
     }
 
     /**
-     * Streams the three dimensional array of xVelocities with 30Hz sampling snapshots of their posi-
-     * tions to a file xOut.dat
-     * @return A 3D array of floats representing the captured velocity x component
+     * Resamples the input data and writes it to a file using the given file writer
+     * @param outputWriter
+     *             The file writer that this method should use to generate the output data
+     * @return True if the file was correctly written else False
      */
-    public void writeSimulationInput()
+    public boolean writeSimulationInput( FileWriter<SimulationInput> outputWriter )
     {
 
         if ( velocities.size() == 0 )
         {
-            // CHANGE THIS TO A DIALOG!!
-            System.out.println( "No velocities loaded" );
-            return;
+            return false;
         }
 
         ListIterator<Velocity> currentVelocity = velocities.listIterator();
@@ -217,7 +213,7 @@ public class DataProcessor
         }
 
         outputWriter.writeSimulationData( new SimulationInput( sampling, captureDimensions ) );
-        return;
+        return true;
 
     }
 

@@ -5,11 +5,14 @@ package za.ac.wits.elen4010.fluidsim.gui;
 // Standard dependancies
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.util.Arrays;
+import java.io.File;
 //import java.util.concurrent.ExecutorService;
 //import java.util.concurrent.Executors;
 //import java.util.concurrent.RejectedExecutionException;
@@ -26,6 +29,10 @@ class GUI
 
     // ===Private Data Members===
 
+    /** Stores the file writer which is used throughout the program for the saving of files*/
+    private static FileWriter<SimulationInput> outputWriter;
+    /** Stores the file chooser used through the program for saving and loading*/
+    private static final JFileChooser fileChooser = new JFileChooser();
     /** Stores the window variable which will have items dynamically added and removed from it*/
     private static JFrame displayFrame;
     /** Stores the panel which will be used to capture data*/
@@ -49,15 +56,72 @@ class GUI
     /** Stores the name of the file that should be used to read data to the program*/
     private static final String FILE_NAME = "out.dat";
     /** Stores the file reader that should be used to render each frame*/
-    private static FileReader<RawFrame> inputReader;
+    private static FileReader<RawFrame> simulationOutputReader;
+    /** Stores the file reader that should be user to read capture data to the program*/
+    private static FileReader<SimulationInput> simulationInputReader;
     /** Insets for the display frame*/
     private static Insets frameInsets;
+    /** The error message to be displayed if a file couldn't be written due to there being no data to write*/
+    private static final String NO_DATA_TO_WRITE = "There is no data in the DataProcessor. Please begin a capture session or load a new data set";
+    /** The error message to be displayed if a file doesn't end in the correct extension to be read*/
+    private static final String UNSUPORTED_FILE_TYPE = "File extension is not supported (nothing loaded)";
+    /** The error message to be displayed if a no simulation data has been loaded but the user tries to visualise*/
+    private static final String NO_DATA_TO_VISUALISE = "No visualisation data loaded. Not visualising";
+    /**
+     * Supported simulation input data file extensions NOTE: these should be gicen in upper case to
+     * work with the determineFileType() method
+     */
+    private static final String[] SIMULATION_INPUT_NAMES = new String[]{ ".IN" };
+    /**
+     * Supported simulation output data file extensions NOTE: these should be given in upper case to
+     * work with the determineFileType() method
+     */
+    private static final String[] SIMULATION_OUTPUT_NAMES = new String[]{ ".OUT" };
+    /** The file type which was determined using the determineFileType() function*/
+    private static enum loadedFileType
+    {
+        INPUT, OUTPUT,  UNSUPORTED;
+    }
     // /** Stores the maximum number of threads that the GUI can handle at any given time*/
     // private final static int MAXIMUM_THREADS = 8;
     // /** Stores the java Executor which handles the threads to be called*/
     // private static final ExecutorService taskRunner = Executors.newFixedThreadPool( MAXIMUM_THREADS );
 
     // ===Private Methods===
+
+    /**
+     * Determines the file type by the full path passed to the function
+     * @param filePath
+     *             The absolute path to the file
+     * @return The type of file NOTE: if the file isn't supported then the UNSUPORTED option is returned
+     */
+    private static loadedFileType determineFileType( String filePath )
+    {
+
+        filePath = filePath.toUpperCase();
+
+        // Determine whether the input file is a simulation input file
+        for ( String inputName : SIMULATION_INPUT_NAMES )
+        {
+            if ( filePath.endsWith( inputName ) )
+            {
+                return loadedFileType.INPUT;
+            }
+        }
+
+        // Determine whether the input file is a simulation output file
+        for ( String outputName : SIMULATION_OUTPUT_NAMES )
+        {
+            if ( filePath.endsWith( outputName ) )
+            {
+                return loadedFileType.OUTPUT;
+            }
+        }
+
+        // File type unrecognised
+        return loadedFileType.UNSUPORTED;
+
+    }
 
     /** Sets up the {@link DataPanel DataPanel} to be added to the window*/
     private static void setupCapturePanel()
@@ -118,10 +182,19 @@ class GUI
 
     }
 
-    /** Activates the data panel*/
-    private static void activateDataPanel()
+    /**
+     * Activates the data panel
+     * @return Whether or not the user decided to create start a new capture session
+     */
+    private static boolean activateDataPanel()
     {
 
+        Object[] options = { "Capture", "Cancel" };
+        int selectedOption = JOptionPane.showOptionDialog( null, "Are you sure you want to start a new capture session?\nAny unsaved data will be lost.", "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1] );
+        if ( selectedOption == 1 )
+        {
+            return false;
+        }
         displayFrame.setVisible( false );
         mouseCapturePanel.reset();
         displayFrame.getContentPane().remove( menuPanel );
@@ -136,7 +209,9 @@ class GUI
             System.err.println( "Execution of the program was prematurely interrupted" );
             ExecutionPrematurelyInterrupted.printStackTrace( System.err );
         }
-        displayFrame.setVisible( true );  
+        displayFrame.setVisible( true );
+
+        return true;
 
     }
 
@@ -196,7 +271,11 @@ class GUI
 
         if ( selectedOption == MenuActions.CAPTURE )
         {
-            activateDataPanel();
+            if ( !( activateDataPanel() ) )
+            {
+                activateMenuPanel( null );
+                return;
+            }
             dataLoop();
             return;
         }
@@ -210,8 +289,75 @@ class GUI
 
         if ( selectedOption == MenuActions.SAVE )
         {
-            programDataProcessor.writeSimulationInput();
-            return;
+            int option = fileChooser.showSaveDialog( displayFrame );
+            if ( option == JFileChooser.APPROVE_OPTION )
+            {
+                File saveFile = fileChooser.getSelectedFile();
+                if ( saveFile.exists() )
+                {
+                    Object[] options = { "Save", "Cancel" };
+                    int save = JOptionPane.showOptionDialog( null, "Are you sure you want to over write that file.", "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1] );
+                    if ( save == 1 )
+                    {
+                        return;
+                    }
+                }
+                if ( outputWriter == null )
+                {
+                    outputWriter = new FileWriter<SimulationInput>( saveFile.getAbsolutePath() );
+                }
+                else
+                {
+                    outputWriter.resetFile( saveFile.getAbsolutePath() );
+                }
+                if ( !( programDataProcessor.writeSimulationInput( outputWriter ) ) )
+                {
+                    JOptionPane.showMessageDialog( displayFrame, NO_DATA_TO_WRITE );
+                    return;
+                }
+            }
+        }
+
+        if ( selectedOption == MenuActions.LOAD )
+        {
+            int option = fileChooser.showOpenDialog( displayFrame );
+            if ( option == JFileChooser.APPROVE_OPTION )
+            {
+                File loadFile = fileChooser.getSelectedFile();
+                String filePath = loadFile.getAbsolutePath();
+                loadedFileType fileType = determineFileType( loadFile.getName() );
+                switch ( fileType )
+                {
+                    case INPUT:
+                        if ( simulationInputReader == null )
+                        {
+                            simulationInputReader = new FileReader<SimulationInput>( filePath );
+                        }
+                        else
+                        {
+                            simulationInputReader.resetFile( filePath );
+                        }
+                        // SimulationInput storedInputData = simulationInputReader.next();
+                        return;
+                    case OUTPUT:
+                        if ( simulationOutputReader == null )
+                        {
+                            simulationOutputReader = new FileReader<RawFrame>( filePath );
+                        }
+                        else
+                        {
+                            simulationOutputReader.resetFile( filePath );
+                        }
+                        return;
+                    case UNSUPORTED:
+                        JOptionPane.showMessageDialog( displayFrame, UNSUPORTED_FILE_TYPE );
+                        return;
+                    default:
+                        System.err.println( "Something horribly wrong happened (a default statement on an enum switch was reached). Terminating program." );
+                        System.exit( -1 );
+                        return;
+                }
+            }
         }
 
         if ( selectedOption == MenuActions.EXIT )
@@ -249,8 +395,13 @@ class GUI
     private static void visualisationLoop()
     {
 
+        if ( simulationOutputReader == null )
+        {
+            JOptionPane.showMessageDialog( displayFrame, NO_DATA_TO_VISUALISE );
+            return;
+        }
         long startTime = System.currentTimeMillis();
-        RawFrame nextFrame = inputReader.readNextFrame();
+        RawFrame nextFrame = simulationOutputReader.readNextFrame();
         while( nextFrame != null )
         {
             while ( System.currentTimeMillis() - startTime < 33 )
@@ -267,7 +418,7 @@ class GUI
             }
             startTime = System.currentTimeMillis();
             visualisationPanel.setImage( nextFrame );
-            nextFrame = inputReader.readNextFrame();
+            nextFrame = simulationOutputReader.readNextFrame();
         }
 
         activateMenuPanel( visualisationPanel );
@@ -285,11 +436,14 @@ class GUI
     public static void main( String[] Arguments )
     {
 
-        inputReader = new FileReader<RawFrame>( FILE_NAME );
+        outputWriter = null;
+        simulationInputReader = null;
+        simulationOutputReader = null;
         setupWindow();
         activateMenuPanel( null );
         while( true )
         {
+            menuLoop();
             try
             {
                 Thread.sleep( MAIN_THREAD_WAIT_TIME );
@@ -299,7 +453,6 @@ class GUI
                 System.err.println( "Execution of the program was prematurely interrupted" );
                 ExecutionPrematurelyInterrupted.printStackTrace( System.err );
             }
-            menuLoop();
         }
 
     }
