@@ -60,13 +60,17 @@ public class SimulationInput implements Serializable
      * NOTE: null is returned if the list of velocities is exhausted
      * @return the list of {@link Velocity Velocities} assigned to the SimulationInput
      */
-    public Velocity nextVelocity()
+    public Velocity nextInputVelocity()
     {
 
         if ( nextVelocity == null )
         {
-            nextVelocity = nextVelocity = frameByFrameInput.listIterator();
-            return nextVelocity.next();
+            nextVelocity = frameByFrameInput.listIterator();
+            if ( nextVelocity.hasNext() )
+            {
+                return nextVelocity.next();
+            }
+            return null;
         }
 
         if ( nextVelocity.hasNext() )

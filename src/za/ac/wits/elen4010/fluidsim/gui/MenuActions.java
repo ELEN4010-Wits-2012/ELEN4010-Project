@@ -8,5 +8,5 @@ package za.ac.wits.elen4010.fluidsim.gui;
  */
 public enum MenuActions
 {
-    CAPTURE, VISUALISE, SAVE, LOAD, EXIT, LISTENING
+    CAPTURE, EXECUTE, VISUALISE, SAVE, LOAD, EXIT, LISTENING
 }

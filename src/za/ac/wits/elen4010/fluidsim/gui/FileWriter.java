@@ -95,4 +95,15 @@ public class FileWriter<T>
 
     }
 
+    /**
+     * Returns the path to the file currently loaded by the file reader
+     * @return The path to the currently loaded file
+     */
+    public String getFilePath()
+    {
+
+        return outFilePath;
+
+    }
+
 }

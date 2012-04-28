@@ -163,6 +163,26 @@ public class DataProcessor
     }
 
     /**
+     * Special method for re initialising the data processor data by accepting data directly from a
+     * Simulation input for the velocities.
+     * @param loadedSimulationData
+     *             The data passed to the dataprocessor for re initialisation
+     */
+    public void reInitialise( SimulationInput loadedSimulationData )
+    {
+
+        reInitialise();
+        Velocity nextVelocity = loadedSimulationData.nextInputVelocity();
+
+        while ( nextVelocity != null )
+        {
+            velocities.add( nextVelocity );
+            nextVelocity = loadedSimulationData.nextInputVelocity();
+        }
+
+    }
+
+    /**
      * Processes a new sample by appending the new sample to the sample vector and then (if the samp
      * le vector is greater in length than 1 a velocity is calculated and added to the vector of vel
      * ocities.

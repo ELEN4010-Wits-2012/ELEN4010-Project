@@ -41,28 +41,34 @@ public class MenuPanel extends JPanel implements ActionListener
     private static final int CAPTURE_VERTICAL_OFFSET = 70;
     /** Stores Capture button text*/
     private static final String CAPTURE_TEXT = "Capture";
+    /** Stores the "Execute" button*/
+    private static JButton executeButton;
+    /** Stores the vertical off set for the visualise button*/
+    private static final int EXECUTE_VERTICAL_OFFSET = 140;
+    /** Stores the Visualisation button text*/
+    private static final String EXECUTE_TEXT = "Execute";
     /** Stores the "Visualise" button*/
     private static JButton visualiseButton;
     /** Stores the vertical off set for the visualise button*/
-    private static final int VISUALISE_VERTICAL_OFFSET = 140;
+    private static final int VISUALISE_VERTICAL_OFFSET = 210;
     /** Stores the Visualisation button text*/
     private static final String VISUALISE_TEXT = "Visualise";
     /** Stores the "Save" button*/
     private static JButton saveButton;
     /** Stores the vertical off set for the save button*/
-    private static final int SAVE_VERTICAL_OFFSET = 210;
+    private static final int SAVE_VERTICAL_OFFSET = 280;
     /** Stores the Save button text*/
     private static final String SAVE_TEXT = "Save";
     /** Stores the "Load" button*/
     private static JButton loadButton;
     /** Stores the vertical off set for the load button*/
-    private static final int LOAD_VERTICAL_OFFSET = 280;
+    private static final int LOAD_VERTICAL_OFFSET = 350;
     /** Stores the Load button text*/
     private static final String LOAD_TEXT = "Load";
     /** Stores the "Exit" button*/
     private static JButton exitButton;
     /** Stores the vertical off set for the exit button*/
-    private static final int EXIT_VERTICAL_OFFSET = 350;
+    private static final int EXIT_VERTICAL_OFFSET = 420;
     /** Stores the Exit button text*/
     private static final String EXIT_TEXT = "Exit";
     /** Stores the state of the program. If a selection hasn't been made the state is: LISTENING*/
@@ -101,6 +107,13 @@ public class MenuPanel extends JPanel implements ActionListener
         captureButton.setMnemonic( KeyEvent.VK_C );
         captureButton.setActionCommand( CAPTURE_TEXT );
         captureButton.addActionListener( this );
+
+        executeButton = new JButton( EXECUTE_TEXT );
+        add( executeButton );
+        executeButton.setBounds( LEFT_OFFSET + menuInsets.left, EXECUTE_VERTICAL_OFFSET + menuInsets.top, BUTTON_DIMENSION.width, BUTTON_DIMENSION.height );
+        executeButton.setMnemonic( KeyEvent.VK_C );
+        executeButton.setActionCommand( EXECUTE_TEXT );
+        executeButton.addActionListener( this );
 
         visualiseButton = new JButton( VISUALISE_TEXT );
         add( visualiseButton );
@@ -170,6 +183,12 @@ public class MenuPanel extends JPanel implements ActionListener
         if ( CAPTURE_TEXT.equals( eventText ) )
         {
             programState = MenuActions.CAPTURE;
+            return;
+        }
+
+        if ( EXECUTE_TEXT.equals( eventText ) )
+        {
+            programState = MenuActions.EXECUTE;
             return;
         }
 

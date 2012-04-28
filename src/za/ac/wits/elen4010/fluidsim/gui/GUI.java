@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.util.Arrays;
 import java.io.File;
+import java.io.IOException;
 //import java.util.concurrent.ExecutorService;
 //import java.util.concurrent.Executors;
 //import java.util.concurrent.RejectedExecutionException;
@@ -46,7 +47,7 @@ class GUI
     /** Dimensions of the capture and rendering screens*/
     private final static Dimension APPLICATION_DIMENSIONS = new Dimension( 640, 480 );
     /** Dimensions of the menu panel*/
-    private final static Dimension MENU_DIMENSIONS = new Dimension( 300, 500 );
+    private final static Dimension MENU_DIMENSIONS = new Dimension( 300, 570 );
     /** Default colour for display and capture panels*/
     private final static Color APPLICATION_PANEL_COLOUR = Color.black;
     /** Stores the amount of time (in milliseconds) that the application should wait before polling the state of a subframe*/
@@ -65,8 +66,18 @@ class GUI
     private static final String NO_DATA_TO_WRITE = "There is no data in the DataProcessor. Please begin a capture session or load a new data set";
     /** The error message to be displayed if a file doesn't end in the correct extension to be read*/
     private static final String UNSUPORTED_FILE_TYPE = "File extension is not supported (nothing loaded)";
-    /** The error message to be displayed if a no simulation data has been loaded but the user tries to visualise*/
+    /** The error message to be displayed if no simulation data has been loaded but the user tries to visualise*/
     private static final String NO_DATA_TO_VISUALISE = "No visualisation data loaded. Not visualising";
+    /** The error message to be displayed if no simulation data was actually contained in the file which was loaded*/
+    private static final String NO_DATA_IN_FILE = "The file didn't contain any valid simulation input.\nPlease select another file.";
+    /** The error message to be displayed if no {@link RawFrame RawFrames} are in the file*/
+    private static final String NO_RAW_FRAMES_IN_FILE = "The file didn't contain any valid simulation output data.\nPlease load another file.";
+    /** Prompt the user that the program is being executed on the server*/
+    private static final String EXECUTING_SIMULATION = "The simulation is being executed on the HPC.\nBe advised that this will take time.";
+    /** Prompt the user that the program is being executed on the server*/
+    private static final String COULDNT_EXECUTE_SIMULATION = "Failed to execute simulation on the server please try again. If the problem persists, check that this program has access to your machines command terminal.";
+    /** The bash command used to copy the files to the server and run the simulation*/
+    private static final String BASH_COPY_AND_RUN = "emacs";
     /**
      * Supported simulation input data file extensions NOTE: these should be gicen in upper case to
      * work with the determineFileType() method
@@ -280,6 +291,29 @@ class GUI
             return;
         }
 
+        if ( selectedOption == MenuActions.EXECUTE )
+        {
+            if ( outputWriter == null )
+            {
+                JOptionPane.showMessageDialog( displayFrame, NO_DATA_TO_WRITE );
+                return;
+            }
+            if ( determineFileType( outputWriter.getFilePath() ) != loadedFileType.INPUT )
+            {
+                JOptionPane.showMessageDialog( displayFrame, NO_DATA_TO_WRITE ); 
+                return;
+            }
+            try
+            {
+                JOptionPane.showMessageDialog( displayFrame, EXECUTING_SIMULATION );
+                Runtime.getRuntime().exec( BASH_COPY_AND_RUN );
+            }
+            catch ( IOException couldntExecute )
+            {
+                JOptionPane.showMessageDialog( displayFrame, EXECUTING_SIMULATION );
+            }
+        }
+
         if ( selectedOption == MenuActions.VISUALISE )
         {
             activateVisualisationPanel();
@@ -337,7 +371,13 @@ class GUI
                         {
                             simulationInputReader.resetFile( filePath );
                         }
-                        // SimulationInput storedInputData = simulationInputReader.next();
+                        SimulationInput storedInputData = simulationInputReader.readNextFrame();
+                        if ( storedInputData == null )
+                        {
+                            JOptionPane.showMessageDialog( displayFrame, NO_DATA_IN_FILE );
+                            return;
+                        }
+                        programDataProcessor.reInitialise( storedInputData );
                         return;
                     case OUTPUT:
                         if ( simulationOutputReader == null )
@@ -398,10 +438,18 @@ class GUI
         if ( simulationOutputReader == null )
         {
             JOptionPane.showMessageDialog( displayFrame, NO_DATA_TO_VISUALISE );
+            activateMenuPanel( visualisationPanel );
             return;
         }
+
         long startTime = System.currentTimeMillis();
         RawFrame nextFrame = simulationOutputReader.readNextFrame();
+
+        if ( nextFrame == null )
+        {
+            JOptionPane.showMessageDialog( displayFrame, NO_RAW_FRAMES_IN_FILE );
+        }
+
         while( nextFrame != null )
         {
             while ( System.currentTimeMillis() - startTime < 33 )
