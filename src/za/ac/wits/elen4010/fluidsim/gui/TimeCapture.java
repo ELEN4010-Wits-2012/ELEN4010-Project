@@ -76,23 +76,25 @@ public class TimeCapture
      */
     public synchronized void addTimedEvent( String processName, String functionName, long timeDelta )
     {
-
-        ListIterator<LabelNode> nodeFinder = timedProcesses.listIterator();
-        LabelNode nextNode = null;
-
-        while ( nodeFinder.hasNext() )
+        if ( active )
         {
-            nextNode = nodeFinder.next();
-            if ( nextNode.getLabel().equals( processName ) )
+            ListIterator<LabelNode> nodeFinder = timedProcesses.listIterator();
+            LabelNode nextNode = null;
+    
+            while ( nodeFinder.hasNext() )
             {
-                nextNode.addSubEvent( functionName, timeDelta );
-                return;
+                nextNode = nodeFinder.next();
+                if ( nextNode.getLabel().equals( processName ) )
+                {
+                    nextNode.addSubEvent( functionName, timeDelta );
+                    return;
+                }
             }
+    
+            // If the node was in the list the function shouldn't reach this point
+            timedProcesses.add( new LabelNode( functionName ) );
+            timedProcesses.get( timedProcesses.size() ).addSubEvent( functionName, timeDelta );
         }
-
-        // If the node was in the list the function shouldn't reach this point
-        timedProcesses.add( new LabelNode( functionName ) );
-        timedProcesses.get( timedProcesses.size() ).addSubEvent( functionName, timeDelta );
 
     }
 
