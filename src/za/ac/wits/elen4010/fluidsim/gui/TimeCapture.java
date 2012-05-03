@@ -30,6 +30,8 @@ public class TimeCapture
     private List<LabelNode> timedProcesses;
     /** The pointer for this instance of this singleton*/
     private static TimeCapture instance = null;
+    
+    private boolean active = false;
 
     // ===Private Methods===
 
@@ -109,6 +111,16 @@ public class TimeCapture
             nextNode.writeData();
         }
 
+    }
+    
+    public synchronized void setActive( boolean active )
+    {
+        this.active = active;
+    }
+    
+    public synchronized boolean getActive()
+    {
+        return active;
     }
 
 }
