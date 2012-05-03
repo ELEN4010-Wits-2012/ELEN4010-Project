@@ -103,14 +103,16 @@ public class TimeCapture
      */
     public synchronized void writeCSVData()
     {
-
-        ListIterator<LabelNode> nodeFinder = timedProcesses.listIterator();
-        LabelNode nextNode = null;
-
-        while ( nodeFinder.hasNext() )
+        if (active)
         {
-            nextNode = nodeFinder.next();
-            nextNode.writeData();
+            ListIterator<LabelNode> nodeFinder = timedProcesses.listIterator();
+            LabelNode nextNode = null;
+    
+            while ( nodeFinder.hasNext() )
+            {
+                nextNode = nodeFinder.next();
+                nextNode.writeData();
+            }
         }
 
     }

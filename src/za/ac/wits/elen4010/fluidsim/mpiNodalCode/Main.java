@@ -21,6 +21,7 @@ import java.net.*;
 import java.io.*;
 import java.text.*;
 
+import za.ac.wits.elen4010.fluidsim.gui.TimeCapture;
 import za.ac.wits.elen4010.fluidsim.sim.Fluid;
 import mpi.*;
 
@@ -71,6 +72,8 @@ class Main
         mainNode.run( frames );
     }
  
+    TimeCapture.getInstance().writeCSVData();
+    
     MPI.Finalize();
     
   }

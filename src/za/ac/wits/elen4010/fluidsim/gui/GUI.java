@@ -402,6 +402,7 @@ class GUI
 
         if ( selectedOption == MenuActions.EXIT )
         {
+            TimeCapture.getInstance().writeCSVData();
             System.exit( 0 );
             return;
         }
