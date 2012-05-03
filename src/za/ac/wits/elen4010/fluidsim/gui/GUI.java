@@ -489,7 +489,8 @@ class GUI
      */
     public static void main( String[] Arguments )
     {
-
+        TimeCapture.getInstance().setActive( true );        
+        
         outputWriter = null;
         simulationInputReader = null;
         simulationOutputReader = null;

@@ -44,25 +44,27 @@ public class SlaveNode
      */
     public SlaveNode( int slaveNodeRank, int p )
     {
-	   if (slaveNodeRank != 0)
-	   {
-	       this.commSize = p;
-	       MyRank = slaveNodeRank ;
-		   
-	       try 
-	       {
-		       initialiseNode();
-		   } 
-		   catch (MPIException e) 
-		   {
-		       // TODO Auto-generated catch block
-		       e.printStackTrace();
-		   }
-	   }
-	   else
-	   {
-		//throw exception log error   
-	   }
+        TimeCapture.getInstance().setActive( true );
+        
+    	if (slaveNodeRank != 0)
+    	{
+    	    this.commSize = p;
+    	    MyRank = slaveNodeRank ;
+    		   
+    	    try 
+    	    {
+    	        initialiseNode();
+    		} 
+    		catch (MPIException e) 
+    		{
+    		    // TODO Auto-generated catch block
+    		    e.printStackTrace();
+    		}
+    	}
+    	else
+    	{
+    	    //throw exception log error   
+    	}
    }
     
    /** 

@@ -31,6 +31,8 @@ public class MainNode
      */
     public MainNode() throws MPIException
     {
+        TimeCapture.getInstance().setActive( true );
+        
     	mainNodeCount = mainNodeCount + 1;
     	
     	//Ensures that only one main node can be created through static variable counter
