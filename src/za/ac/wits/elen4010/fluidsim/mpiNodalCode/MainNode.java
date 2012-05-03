@@ -31,7 +31,6 @@ public class MainNode
      */
     public MainNode() throws MPIException
     {
-        TimeCapture.getInstance().setActive( true );
         
     	mainNodeCount = mainNodeCount + 1;
     	

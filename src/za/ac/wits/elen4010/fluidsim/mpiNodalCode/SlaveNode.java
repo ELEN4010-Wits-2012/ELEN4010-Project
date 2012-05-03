@@ -43,9 +43,7 @@ public class SlaveNode
      * @param p The size of the entire communicator
      */
     public SlaveNode( int slaveNodeRank, int p )
-    {
-        TimeCapture.getInstance().setActive( true );
-        
+    {        
     	if (slaveNodeRank != 0)
     	{
     	    this.commSize = p;

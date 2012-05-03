@@ -40,6 +40,8 @@ class Main
     static public void main(String[] args) throws MPIException 
     {
       
+    TimeCapture.getInstance().setActive( true );
+        
     /** Initialize MPI */
     MPI.Init(args) ;
 
