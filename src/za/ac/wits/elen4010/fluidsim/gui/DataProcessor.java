@@ -191,18 +191,23 @@ public class DataProcessor
      */
     public void processNewSample( SamplePoint newSample )
     {
+        long startTime = System.nanoTime();
 
         if ( samplePoints.size() >= 1 )
         {
             // Sometimes a machine can sample faster than the system can record the sample time. In order to prevent division by zero these 'fast' samples must be discarded.
             if ( samplePoints.get( samplePoints.size() - 1 ).getTimeStamp() - newSample.getTimeStamp() == 0 )
             {
+                long elapsedTime = System.nanoTime() - startTime;
+                TimeCapture.getInstance().addTimedEvent( "gui", "processNewSample", elapsedTime );
                 return;
             }
             velocities.add( samplePoints.get( samplePoints.size() - 1 ).getVelocity( newSample ) );
         }
         samplePoints.add( newSample );
 
+        long elapsedTime = System.nanoTime() - startTime;
+        TimeCapture.getInstance().addTimedEvent( "gui", "processNewSample", elapsedTime );
     }
 
     /**
@@ -213,9 +218,12 @@ public class DataProcessor
      */
     public boolean writeSimulationInput( FileWriter<SimulationInput> outputWriter )
     {
+        long benchmarkStartTime = System.nanoTime();
 
         if ( velocities.size() == 0 )
         {
+            long benchmarkElapsedTime = System.nanoTime() - benchmarkStartTime;
+            TimeCapture.getInstance().addTimedEvent( "gui", "writeSimulationInput", benchmarkElapsedTime );
             return false;
         }
 
@@ -233,6 +241,9 @@ public class DataProcessor
         }
 
         outputWriter.writeSimulationData( new SimulationInput( sampling, captureDimensions ) );
+        
+        long benchmarkElapsedTime = System.nanoTime() - benchmarkStartTime;
+        TimeCapture.getInstance().addTimedEvent( "gui", "writeSimulationInput", benchmarkElapsedTime );
         return true;
 
     }

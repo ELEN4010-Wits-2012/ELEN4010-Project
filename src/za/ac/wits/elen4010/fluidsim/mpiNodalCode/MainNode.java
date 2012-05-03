@@ -53,6 +53,8 @@ public class MainNode
      */
     private void initiliseSlaveNodes() throws MPIException
     {
+        long startTime = System.nanoTime();
+        
         /* XXXXXXXXX THIS CODE WILL BE IMPLEMENTED ONCE WE HAVE A TEST FILE XXXXXXXXXXX
         SimulationInput[] tempInput = new SimulationInput[1];
         // Read initial conditions from file
@@ -70,7 +72,11 @@ public class MainNode
         {
             MPI.COMM_WORLD.Send(tempInput, 0, 1, MPI.OBJECT, source, MessagingTags.Initialcondition_FromServer);
             System.out.println("sent IC to process rank " + source);
-        }	
+        }
+        
+        long elapsedTime = System.nanoTime() - startTime;
+        
+        TimeCapture.getInstance().addTimedEvent( "0", "initiliseSlaveNodes", elapsedTime );
     }
     
     /** 
@@ -82,7 +88,9 @@ public class MainNode
      * 
      */
     public void run( int frames ) throws MPIException
-    {       
+    {
+        long startTime = System.nanoTime();
+        
         // Loop through total number of specified frames
         for ( int i = 0; i != frames; i++ )
         {
@@ -110,6 +118,8 @@ public class MainNode
             fileWriter.writeSimulationData( new_frame );
         }
         
+        long elapsedTime = System.nanoTime() - startTime;
+        TimeCapture.getInstance().addTimedEvent( "0", "run", elapsedTime );
     }
     
     /**

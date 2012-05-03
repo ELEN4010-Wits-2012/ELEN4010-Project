@@ -86,7 +86,8 @@ public class GraphicalPanel extends JPanel
      */
     public void setImage( RawFrame nextFrame )
     {
-
+        long startTime = System.nanoTime();
+        
         float[][] frameData = nextFrame.getFrame();
 
         // ASSERT THAT ITS THE CORRECT SIZE HERE!!
@@ -101,7 +102,8 @@ public class GraphicalPanel extends JPanel
             }
         }
 
-        
+        long elapsedTime = System.nanoTime() - startTime;
+        TimeCapture.getInstance().addTimedEvent( "gui", "setImage", elapsedTime );
 
     }
 

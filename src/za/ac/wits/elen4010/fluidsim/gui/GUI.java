@@ -434,11 +434,15 @@ class GUI
     /** Rendering loop for visualisation*/
     private static void visualisationLoop()
     {
+        long benchmarkStartTime = System.nanoTime();
 
         if ( simulationOutputReader == null )
         {
             JOptionPane.showMessageDialog( displayFrame, NO_DATA_TO_VISUALISE );
             activateMenuPanel( visualisationPanel );
+            
+            long benchmarkElapsedTime = System.nanoTime() - benchmarkStartTime;
+            TimeCapture.getInstance().addTimedEvent( "gui", "visualisationLoop", benchmarkElapsedTime );
             return;
         }
 
@@ -471,6 +475,8 @@ class GUI
 
         activateMenuPanel( visualisationPanel );
 
+        long benchmarkElapsedTime = System.nanoTime() - benchmarkStartTime;
+        TimeCapture.getInstance().addTimedEvent( "gui", "visualisationLoop", benchmarkElapsedTime );
         return;
 
     }

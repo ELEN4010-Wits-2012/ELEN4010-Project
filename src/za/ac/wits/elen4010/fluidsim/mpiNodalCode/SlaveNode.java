@@ -155,11 +155,16 @@ public class SlaveNode
     */
    private void sendRenderData() throws MPIException
    {
+       long startTime = System.nanoTime();
+       
         // This step could also be done after calculating all frames
         RenderData[] tempOut = new RenderData[1];
         tempOut[0] = fluid.getRenderData();
         tempOut[0].setSourceRank( MyRank );
         MPI.COMM_WORLD.Send( tempOut, 0, 1, MPI.OBJECT, HostRank, MessagingTags.RenderDataFromSlave );
+        
+        long elapsedTime = System.nanoTime() - startTime;
+        TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendRenderData", elapsedTime );
    }
    
    /**
@@ -170,10 +175,15 @@ public class SlaveNode
    {
        EdgeData[] edge = new EdgeData[1];
        
+       long stepStartTime = System.nanoTime();
        // calculate, send to master node
-       fluid.step();  
+       fluid.step();
+       long stepElapsedTime = System.nanoTime() - stepStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "stepTopProcess", stepElapsedTime );
+       
        sendRenderData();
        
+       long boundarycommStartTime = System.nanoTime();
        // Send local boundary conditions
        edge[0] = fluid.getEdge( Side.BOTTOM );
        MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
@@ -182,6 +192,10 @@ public class SlaveNode
        MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
        fluid.setOverlap( edge[0] , Side.BOTTOM);  
        System.out.println("Top sent/received edges");
+       
+     //fake function name has been used to distinguish from other timer
+       long boundarycommElapsedTime = System.nanoTime() - boundarycommStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendBoundaryTopProcess", boundarycommElapsedTime );
    }
    
    /**
@@ -193,9 +207,14 @@ public class SlaveNode
        EdgeData[] edge = new EdgeData[1];
        
        // Calculate, send to master node
+       long stepStartTime = System.nanoTime();
        fluid.step();
+       long stepElapsedTime = System.nanoTime() - stepStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "stepBottomProcess", stepElapsedTime );
+       
        sendRenderData();
        
+       long boundarycommStartTime = System.nanoTime();
        // Receive boundary conditions and set fluid overlap
        MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT,MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
        fluid.setOverlap( edge[0] , Side.TOP);
@@ -204,6 +223,10 @@ public class SlaveNode
        edge[0] = fluid.getEdge( Side.TOP );
        MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
        System.out.println("Bottom sent/received edges");
+       
+     //fake function name has been used to distinguish from other timer
+       long boundarycommElapsedTime = System.nanoTime() - boundarycommStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendBoundaryBottomProcess", boundarycommElapsedTime );
    }
    
    /**
@@ -215,9 +238,14 @@ public class SlaveNode
        EdgeData[] edge = new EdgeData[1];
 
        // Calculate, send to master node
+       long stepStartTime = System.nanoTime();
        fluid.step();
+       long stepElapsedTime = System.nanoTime() - stepStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "stepEvenProcess", stepElapsedTime );
+       
        sendRenderData();
        
+       long boundarycommStartTime = System.nanoTime();
        // ======= Send below, receive above, send above, receive below =======
        edge[0] = fluid.getEdge( Side.BOTTOM );
        MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
@@ -228,6 +256,10 @@ public class SlaveNode
        MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
        fluid.setOverlap( edge[0] , Side.BOTTOM);
        System.out.println("Centre even sent/received edges");
+       
+       //fake function name has been used to distinguish from other timer
+       long boundarycommElapsedTime = System.nanoTime() - boundarycommStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendBoundaryEvenProcess", boundarycommElapsedTime );
    }
    
    /**
@@ -239,9 +271,14 @@ public class SlaveNode
        EdgeData[] edge = new EdgeData[1];
 
        // Calculate, send to master node
+       long stepStartTime = System.nanoTime();
        fluid.step();
+       long stepElapsedTime = System.nanoTime() - stepStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "stepOddProcess", stepElapsedTime );
+
        sendRenderData();
        
+       long boundarycommStartTime = System.nanoTime();
        // ======= Receive above, send below, receive below, send above =======
        MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
        fluid.setOverlap( edge[0] , Side.TOP);
@@ -252,5 +289,9 @@ public class SlaveNode
        edge[0] = fluid.getEdge( Side.TOP );
        MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
        System.out.println("Centre odd sent/received edges");
+       
+       //fake function name has been used to distinguish from other timer
+       long boundarycommElapsedTime = System.nanoTime() - boundarycommStartTime;
+       TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendBoundaryOddProcess", boundarycommElapsedTime );
    }
 }
