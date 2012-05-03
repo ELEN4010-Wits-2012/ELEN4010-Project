@@ -27,7 +27,7 @@ public class TimeCapture
      * inked list containing all the sub identifiers for that list. The higher level nodes are
      * {@link LabelNodes LableNodes} and the lower level nodes are {@link DataNode DataNodes}
      */
-    private static List<LabelNode> timedProcesses;
+    private List<LabelNode> timedProcesses;
     /** The pointer for this instance of this singleton*/
     private static TimeCapture instance = null;
 
@@ -70,7 +70,7 @@ public class TimeCapture
      * @param functionName
      *             The name of the function which is logging the event
      * @param timeDelta
-     *             The time delta for the execution of the function
+     *             The time delta for the execution of the function in nanoseconds.
      */
     public synchronized void addTimedEvent( String processName, String functionName, long timeDelta )
     {
