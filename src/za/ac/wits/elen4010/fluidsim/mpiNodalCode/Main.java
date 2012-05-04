@@ -51,12 +51,14 @@ class Main
     int p = MPI.COMM_WORLD.Size();
     /** Total number of simulation frames */
     int frames = 2;
+    /** Correct io module to be used for the actual simulation*/
+    MpiIO correctIO = new TrueIO();
 
     if(myrank != 0)  // my_rank != 0 => slave node
     {
         try 
         {   //create a slave node
-            SlaveNode LocalSlave = new SlaveNode(myrank, p);
+            SlaveNode LocalSlave = new SlaveNode( myrank, p, correctIO );
             LocalSlave.run( frames );
         
         } catch (UnknownHostException e) {
@@ -70,7 +72,7 @@ class Main
     }
     else  // my_rank == 0 => master node
     {  
-        MainNode mainNode = new MainNode();
+        MainNode mainNode = new MainNode( correctIO );
         mainNode.run( frames );
     }
  

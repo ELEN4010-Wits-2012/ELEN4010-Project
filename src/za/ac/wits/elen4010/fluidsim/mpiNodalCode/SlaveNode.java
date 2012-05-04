@@ -29,6 +29,8 @@ public class SlaveNode
     int commSize = 0;
     /** Local fluid object */
     private Fluid fluid ;
+    /** The communications module used by the SlaveNodes to communicate to oether nodes*/
+    private MpiIO commModule;
     
     /** Stores messaging tags */
     MessagingTags tags ;
@@ -42,8 +44,11 @@ public class SlaveNode
      * @param slaveNodeRank The rank of the current slave process
      * @param p The size of the entire communicator
      */
-    public SlaveNode( int slaveNodeRank, int p )
-    {        
+    public SlaveNode( int slaveNodeRank, int p, MpiIO ioModule )
+    {
+
+      commModule = ioModule;
+
     	if (slaveNodeRank != 0)
     	{
     	    this.commSize = p;
@@ -84,7 +89,7 @@ public class SlaveNode
             // Array to store user input objects	   	
             SimulationInput[] initialConditions = new SimulationInput[1];
             // Receive initial conditions
-            MPI.COMM_WORLD.Recv(initialConditions, 0, 1, MPI.OBJECT, HostRank, MessagingTags.Initialcondition_FromServer);
+            commModule.mpiReceive(initialConditions, 0, 1, MPI.OBJECT, HostRank, MessagingTags.Initialcondition_FromServer);
             System.out.println("Recieved IC to process rank " + MyRank);		
             
             // Initialise the Fluid object
@@ -161,7 +166,7 @@ public class SlaveNode
         RenderData[] tempOut = new RenderData[1];
         tempOut[0] = fluid.getRenderData();
         tempOut[0].setSourceRank( MyRank );
-        MPI.COMM_WORLD.Send( tempOut, 0, 1, MPI.OBJECT, HostRank, MessagingTags.RenderDataFromSlave );
+        commModule.mpiSend( tempOut, 0, 1, MPI.OBJECT, HostRank, MessagingTags.RenderDataFromSlave );
         
         long elapsedTime = System.nanoTime() - startTime;
         TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendRenderData", elapsedTime );
@@ -186,10 +191,10 @@ public class SlaveNode
        long boundarycommStartTime = System.nanoTime();
        // Send local boundary conditions
        edge[0] = fluid.getEdge( Side.BOTTOM );
-       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
+       commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
        
        // Receive local boundary conditions and set overlap
-       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       commModule.mpiReceive(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
        fluid.setOverlap( edge[0] , Side.BOTTOM);  
        System.out.println("Top sent/received edges");
        
@@ -216,12 +221,12 @@ public class SlaveNode
        
        long boundarycommStartTime = System.nanoTime();
        // Receive boundary conditions and set fluid overlap
-       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT,MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
+       commModule.mpiReceive(edge, 0, 1, MPI.OBJECT,MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
        fluid.setOverlap( edge[0] , Side.TOP);
        
        // Send Boundary Conditions 
        edge[0] = fluid.getEdge( Side.TOP );
-       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
+       commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
        System.out.println("Bottom sent/received edges");
        
      //fake function name has been used to distinguish from other timer
@@ -248,12 +253,12 @@ public class SlaveNode
        long boundarycommStartTime = System.nanoTime();
        // ======= Send below, receive above, send above, receive below =======
        edge[0] = fluid.getEdge( Side.BOTTOM );
-       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
-       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
+       commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
+       commModule.mpiReceive(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
        fluid.setOverlap( edge[0] , Side.TOP);
        edge[0] = fluid.getEdge( Side.TOP );
-       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
-       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
+       commModule.mpiReceive(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
        fluid.setOverlap( edge[0] , Side.BOTTOM);
        System.out.println("Centre even sent/received edges");
        
@@ -280,14 +285,14 @@ public class SlaveNode
        
        long boundarycommStartTime = System.nanoTime();
        // ======= Receive above, send below, receive below, send above =======
-       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
+       commModule.mpiReceive(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_FromNeighbourAbove);
        fluid.setOverlap( edge[0] , Side.TOP);
        edge[0] = fluid.getEdge( Side.BOTTOM );
-       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
-       MPI.COMM_WORLD.Recv(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
+       commModulempiReceive(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
        fluid.setOverlap( edge[0] , Side.BOTTOM);
        edge[0] = fluid.getEdge( Side.TOP );
-       MPI.COMM_WORLD.Send(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
+       commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);
        System.out.println("Centre odd sent/received edges");
        
        //fake function name has been used to distinguish from other timer

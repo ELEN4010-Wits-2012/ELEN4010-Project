@@ -25,13 +25,16 @@ public class MainNode
     Boolean hostInitialised = false;
     /** Stores the total number of frames */
     int frames;
+    /** The communications module used by the MainNode to communicate to other nodes*/
+    private MpiIO commModule;
     
     /**
      * Main node constructor.
      */
-    public MainNode() throws MPIException
+    public MainNode( MpiIO ioModule ) throws MPIException
     {
-        
+
+      commModule = ioModule;
     	mainNodeCount = mainNodeCount + 1;
     	
     	//Ensures that only one main node can be created through static variable counter
@@ -71,7 +74,7 @@ public class MainNode
         // Send initial conditions to all slaves
         for ( int source = 1; source != threadCount; source++ )
         {
-            MPI.COMM_WORLD.Send(tempInput, 0, 1, MPI.OBJECT, source, MessagingTags.Initialcondition_FromServer);
+            commModule.mpiSend(tempInput, 0, 1, MPI.OBJECT, source, MessagingTags.Initialcondition_FromServer);
             System.out.println("sent IC to process rank " + source);
         }
         
@@ -101,7 +104,7 @@ public class MainNode
             for ( int source=1; source != threadCount; source++ )
             {
                 RenderData[] strip = new RenderData[1];
-                MPI.COMM_WORLD.Recv(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
+                commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 System.out.println("Master node received data strip from slave");
                 // Add strip to array
                 stripArray[source-1] = strip[0];
