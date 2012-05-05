@@ -289,7 +289,7 @@ public class SlaveNode
        fluid.setOverlap( edge[0] , Side.TOP);
        edge[0] = fluid.getEdge( Side.BOTTOM );
        commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_ToNeighbourBelow);
-       commModulempiReceive(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
+       commModule.mpiReceive(edge, 0, 1, MPI.OBJECT, MyRank+1, MessagingTags.BoundryInfo_FromNeighbourBelow);
        fluid.setOverlap( edge[0] , Side.BOTTOM);
        edge[0] = fluid.getEdge( Side.TOP );
        commModule.mpiSend(edge, 0, 1, MPI.OBJECT, MyRank-1, MessagingTags.BoundryInfo_ToNeighbourAbove);

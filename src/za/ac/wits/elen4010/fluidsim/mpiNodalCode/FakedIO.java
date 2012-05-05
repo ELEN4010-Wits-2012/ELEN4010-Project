@@ -1,5 +1,8 @@
 // FakedIO.java
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 
+import mpi.*;
+import java.lang.Object;
 /**
  * A class which implements {@link MpiIO MpiIO} to inject "Fake" test data to the system for testing
  * purposes
@@ -76,7 +79,7 @@ public class FakedIO implements MpiIO
      * @return The status of the operation which contains important information such as the source a-
      * nd tag fields
      */
-    public Status mpiReceive( object data, int offset, int count, Datatype dataType, int source, int tag )
+    public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag )
     {
 
         for ( int l = offset, l != count; ++l )

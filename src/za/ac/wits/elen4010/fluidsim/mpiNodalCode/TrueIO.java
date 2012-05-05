@@ -1,7 +1,9 @@
 // TrueIO.java
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 
 // Standard dependancies
 import mpi.*;
+import java.lang.Object;
 
 /**
  * A class which implements {@link MpiIO MpiIO} to achieve the "true" vesion of the MPI IO operations
@@ -37,7 +39,7 @@ public class TrueIO implements MpiIO
      * @param tag
      *             The tag which defines the user specified message type
      */
-    public void mpiSend( Object data, int offset, int count, Datatype dataType, int destination, int tag )
+    public void mpiSend( Object data, int offset, int count, Datatype dataType, int destination, int tag ) throws MPIException
     {
 
         MPI.COMM_WORLD.Send( data, offset, count, dataType, destination, tag );
@@ -63,11 +65,11 @@ public class TrueIO implements MpiIO
      * @return The status of the operation which contains important information such as the source a-
      * nd tag fields
      */
-    public Status mpiReceive( object data, int offset, int count, Datatype dataType, int source, int tag )
+    public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException
     {
 
         MPI.COMM_WORLD.Recv( data, offset, count, dataType, source, tag );
-
+        return new Status();
     }
 
 }
