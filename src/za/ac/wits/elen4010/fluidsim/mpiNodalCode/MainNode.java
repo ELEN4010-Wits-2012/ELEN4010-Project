@@ -27,28 +27,34 @@ public class MainNode
     int frames;
     /** The communications module used by the MainNode to communicate to other nodes*/
     private MpiIO commModule;
+    /** Main node singleton instance */
+    private static MainNode mainNodeInstance = null;
     
     /**
      * Main node constructor.
+     * @param ioModule to handle mpi IO requests
+     * @throws mpiException if slave nodes cannot be initialised
      */
-    public MainNode( MpiIO ioModule ) throws MPIException
+    private MainNode( MpiIO ioModule ) throws MPIException
     {
-
-      commModule = ioModule;
-    	mainNodeCount = mainNodeCount + 1;
-    	
-    	//Ensures that only one main node can be created through static variable counter
-    	if (mainNodeCount == 1)
-    	{
-    		SlaveNodeList.clear();
-    		threadCount = MPI.COMM_WORLD.Size() ;
-    		initiliseSlaveNodes();
-    	}
-    	else
-    	{
-    		//Throw Exception
-    		//Call Destructor
-    	}
+        commModule = ioModule;
+		SlaveNodeList.clear();
+		threadCount = commModule.commWorldSize() ;
+		initiliseSlaveNodes();
+    }
+    
+    /**
+     * Return an instance of the main node singleton
+     * @return instance of the main node singleton
+     * @throws mpiException if slave nodes cannot be initialised
+     */
+    public static MainNode getInstance( MpiIO ioModule ) throws MPIException
+    {
+        if( mainNodeInstance == null )
+        {
+            mainNodeInstance = new MainNode( ioModule );
+        }
+        return mainNodeInstance;
     }
 
     /**
@@ -100,7 +106,7 @@ public class MainNode
         {
             RenderData[] stripArray = new RenderData[ threadCount ];    // Stores RenderData objects in an array
             
-            // Receive frame data from each process
+         // Receive frame data from each process
             for ( int source=1; source != threadCount; source++ )
             {
                 RenderData[] strip = new RenderData[1];
@@ -108,7 +114,7 @@ public class MainNode
                 System.out.println("Master node received data strip from slave");
                 // Add strip to array
                 stripArray[source-1] = strip[0];
-                
+ 
             }
             
             System.out.println(Arrays.toString(stripArray));             
@@ -127,7 +133,7 @@ public class MainNode
     }
     
     /**
-     * Function to aggregate RenderData objects into one large 
+     * Function to aggregate RenderData objects into one large array
      * @param stripArray An array of RenderData objects that will be aggregated
      * @return A RawFrame object containing the aggregated array
      */
@@ -155,10 +161,6 @@ public class MainNode
             // Copy the rows of each object array to the aggregated array
             for( int j = 0; j != segmentHeight; j++ )
             {
-                //System.out.println("-----> loop " + j);
-                //System.out.println(density[j]);
-                //System.out.println(" Printed density[" + j + "]");
-                //System.out.println(tempArray[j + firstSegmentRow]);
                 System.arraycopy( density[j], 0, tempArray[j + firstSegmentRow], 0, segmentHeight );
             }
         }

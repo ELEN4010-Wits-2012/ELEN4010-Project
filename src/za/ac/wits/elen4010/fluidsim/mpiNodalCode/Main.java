@@ -40,45 +40,47 @@ class Main
     static public void main(String[] args) throws MPIException 
     {
       
-    TimeCapture.getInstance().setActive( true );
-        
-    /** Initialize MPI */
-    MPI.Init(args) ;
+        TimeCapture.getInstance().setActive( true );     
 
-    /** Rank of the current process */
-    int myrank = MPI.COMM_WORLD.Rank() ;
-    /** Size of the communicator */
-    int p = MPI.COMM_WORLD.Size();
-    /** Total number of simulation frames */
-    int frames = 2;
-    /** Correct io module to be used for the actual simulation*/
-    MpiIO correctIO = new TrueIO();
-
-    if(myrank != 0)  // my_rank != 0 => slave node
-    {
-        try 
-        {   //create a slave node
-            SlaveNode LocalSlave = new SlaveNode( myrank, p, correctIO );
-            LocalSlave.run( frames );
+        /** Correct io module to be used for the actual simulation*/
+        MpiIO correctIO = new TrueIO();
         
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        /** Initialize MPI */
+        MPI.Init(args) ;
+    
+        /** Rank of the current process */
+        int myrank = correctIO.myRank();
+        /** Size of the communicator */
+        int p = correctIO.commWorldSize();
+        /** Total number of simulation frames */
+        int frames = 2;
+
+    
+        if(myrank != 0)  // my_rank != 0 => slave node
+        {
+            try 
+            {   //create a slave node
+                SlaveNode LocalSlave = new SlaveNode( myrank, p, correctIO );
+                LocalSlave.run( frames );
+            
+            } catch (UnknownHostException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        
         }
-    
-    }
-    else  // my_rank == 0 => master node
-    {  
-        MainNode mainNode = new MainNode( correctIO );
-        mainNode.run( frames );
-    }
- 
-    TimeCapture.getInstance().writeCSVData();
-    
-    MPI.Finalize();
+        else  // my_rank == 0 => master node
+        {  
+            MainNode mainNode = MainNode.getInstance( correctIO );
+            mainNode.run( frames );
+        }
+     
+        TimeCapture.getInstance().writeCSVData();
+        
+        MPI.Finalize();
     
   }
 }

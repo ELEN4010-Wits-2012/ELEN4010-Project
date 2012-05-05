@@ -8,6 +8,7 @@ import java.lang.Object;
 /**
  * A class which implements {@link MpiIO MpiIO} to achieve the "true" vesion of the MPI IO operations
  * @author Edward Steere
+ * @author Graham Peyton
  * @see MpiIO
  * @see FakedIO
  */
@@ -67,9 +68,26 @@ public class TrueIO implements MpiIO
      */
     public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException
     {
-
         MPI.COMM_WORLD.Recv( data, offset, count, dataType, source, tag );
         return new Status();
+    }
+    
+    /**
+     * Returns the rank of current process
+     * @return      The rank of the current process
+     */
+    public int myRank() throws MPIException
+    {
+        return MPI.COMM_WORLD.Rank();
+    }
+    
+    /**
+     * Returns the size of the communicator
+     * @return      The size of the comm_world communicator
+     */
+    public int commWorldSize() throws MPIException
+    {
+        return MPI.COMM_WORLD.Size();
     }
 
 }

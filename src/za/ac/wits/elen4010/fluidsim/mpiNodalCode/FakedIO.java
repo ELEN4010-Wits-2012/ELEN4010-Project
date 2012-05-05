@@ -7,6 +7,7 @@ import java.lang.Object;
  * A class which implements {@link MpiIO MpiIO} to inject "Fake" test data to the system for testing
  * purposes
  * @author Edward Steere
+ * @author Graham Peyton
  * @see MpiIO
  * @see TrueIO
  */
@@ -14,9 +15,13 @@ public class FakedIO implements MpiIO
 {
 
     /** Data to be "received" when the mpiReceive command is called*/
-    private Object[] receivedData;
+    private Object[] receivedData = new Object[1];;
     /** Status object to be "returned" when the mpiReveive command is called*/
-    private Status reveicedStatus;
+    //private Status receivedStatus;
+    /** Fake rank of the current process */
+    private int myRank;
+    /** Fake communicator size */
+    private int commWorldSize;
 
     // ===Public Methods===
 
@@ -28,12 +33,24 @@ public class FakedIO implements MpiIO
      * @param status
      *             The fake status to be returned whenever the mpiReceive command is called
      */
-    public FakedIO( Oject[] data, Status status )
+    public FakedIO( Object data )
     {
-
         receivedData = data;
-        receivedStatus = status;
+        //receivedStatus = status;
 
+    }
+    
+    /**
+     * Sets the fake size of the communicator and the current rank of the processor
+     * @param commSize
+     *              The size of the communicator
+     * @param currentRank
+     *              The current rank of the fake process             
+     */
+    public void initProcess(int commSize, int currentRank)
+    {
+        commWorldSize = commSize;
+        myRank = currentRank;
     }
 
     /**
@@ -82,13 +99,32 @@ public class FakedIO implements MpiIO
     public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag )
     {
 
-        for ( int l = offset, l != count; ++l )
-        {
-            data[l] = receivedData[l];
-        }
-
-        return receivedStatus;
+        //for ( int l = offset; l != count; ++l )
+        //{
+            data = receivedData;
+        //}
+        //data = receivedData;
+        return new Status();
 
     }
+    
+    /**
+     * Returns the fake rank of current process
+     * @return      The fake rank of the current process
+     */
+    public int myRank() 
+    {
+        return myRank;
+    }
+    
+    /**
+     * Returns the fake size of the communicator
+     * @return      The fake size of the comm_world communicator
+     */
+    public int commWorldSize() 
+    {
+        return commWorldSize;
+    }
+
 
 }

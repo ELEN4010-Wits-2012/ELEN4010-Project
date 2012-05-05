@@ -7,6 +7,7 @@ import java.lang.Object;
  * Interface for an MPI send and receive object which should be implemented by any object which perf-
  * orms send/receive operations or fakes them
  * @author Edward Steere
+ * @author Graham Peyton
  * @see TrueIO
  * @see FakedIO
  */
@@ -51,5 +52,26 @@ public interface MpiIO
      * nd tag fields
      */
     public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException;
+
+    /**
+     * Returns the rank of current process
+     * @return      The rank of the current process
+     */
+    public int myRank() throws MPIException;
+    
+    /**
+     * Returns the size of the communicator
+     * @return      The size of the comm_world communicator
+     */
+    public int commWorldSize() throws MPIException;  
+    
+    /**
+     * Function to initialise the process
+     * @param commSize
+     *              The size of the world communicator
+     * @param currentRank
+     *              The current process rank
+     */
+    public void initProcess(int commSize, int currentRank);
 
 }
