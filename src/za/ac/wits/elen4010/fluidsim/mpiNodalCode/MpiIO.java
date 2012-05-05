@@ -1,5 +1,8 @@
 // MpiIO.java
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
 
+import mpi.*;
+import java.lang.Object;
 /**
  * Interface for an MPI send and receive object which should be implemented by any object which perf-
  * orms send/receive operations or fakes them
@@ -26,7 +29,7 @@ public interface MpiIO
      * @param tag
      *             The tag which defines the user specified message type
      */
-    public void mpiSend( Object data, int offset, int count, Datatype dataType, int destination, int tag );
+    public void mpiSend( Object data, int offset, int count, Datatype dataType, int destination, int tag ) throws MPIException;
 
 
     /**
@@ -47,6 +50,6 @@ public interface MpiIO
      * @return The status of the operation which contains important information such as the source a-
      * nd tag fields
      */
-    public Status mpiReceive( object data, int offset, int count, Datatype dataType, int source, int tag );
+    public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException;
 
 }
