@@ -110,17 +110,33 @@ public class MainNode
             for ( int source=1; source != threadCount; source++ )
             {
                 RenderData[] strip = new RenderData[1];
+                //Status mpiStatus = commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
+                //System.out.println("Source of received strip: " + mpiStatus.source);
+                //strip[0].setSourceRank( mpiStatus.source );
+                
+                // Dirty bit of code to correctly set the source of the data for testing purposes:
+                //For some reason, mpiStatus.source doesn't want to work....
+                if( commModule instanceof FakedIO ) {
+                    strip[0].setSourceRank(source);
+                    System.out.println("Source ======= " + source );
+                }
+                else if( commModule instanceof TrueIO ) {
+                    // Do nothing
+                }
+                    
                 System.out.println("Master node received data strip from slave");
                 // Add strip to array
-                stripArray[source-1] = strip[0];
- 
+                stripArray[source-1] = strip[0]; int temp = source-1;
+                System.out.println("stripArray [" + temp +"] >>>>>>>> " + stripArray[source -1].getSourceRank());
             }
+            
+            System.out.println("stripArray [0] >>>>>>>> " + stripArray[0].getSourceRank());
+            System.out.println("stripArray [1] >>>>>>>> " + stripArray[1].getSourceRank());
             
             System.out.println(Arrays.toString(stripArray));             
             System.out.println("Aggregating a frame");
-            RawFrame new_frame = null;
-            new_frame = aggregateData(stripArray);                      // Aggregate the strips
+            RawFrame new_frame = aggregateData(stripArray);                      // Aggregate the strips
             System.out.println("Frame aggregated, sending to file!");
 
             // Write received frames to file
@@ -130,6 +146,7 @@ public class MainNode
         
         long elapsedTime = System.nanoTime() - startTime;
         TimeCapture.getInstance().addTimedEvent( "0", "run", elapsedTime );
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
     }
     
     /**

@@ -30,7 +30,7 @@ public interface MpiIO
      * @param tag
      *             The tag which defines the user specified message type
      */
-    public void mpiSend( Object data, int offset, int count, Datatype dataType, int destination, int tag ) throws MPIException;
+    public void mpiSend( Object[] data, int offset, int count, Datatype dataType, int destination, int tag ) throws MPIException;
 
 
     /**
@@ -51,7 +51,7 @@ public interface MpiIO
      * @return The status of the operation which contains important information such as the source a-
      * nd tag fields
      */
-    public Status mpiReceive( Object data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException;
+    public Status mpiReceive( Object[] data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException;
 
     /**
      * Returns the rank of current process
@@ -72,6 +72,6 @@ public interface MpiIO
      * @param currentRank
      *              The current process rank
      */
-    public void initProcess(int commSize, int currentRank);
+    public void initProcess(int commSize );
 
 }
