@@ -30,7 +30,7 @@ public class Fluid
     float dt = 0.2f;
     int numGaussSeidelIter = 2;
     
-    SimulationInput input;
+    SimulationInput userInput;
     float[] viscosity;
     public float[][] densityOld;            // Remember to remove the public after testing
     float[][] densityNew;
@@ -246,7 +246,7 @@ public class Fluid
      */
     public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
-    	this.input = input;
+    	this.userInput = userInput;
     	
     	overlapHeight= overlappingHeight;
     	
@@ -564,7 +564,7 @@ public class Fluid
      */
     private void addUserInput()
     {
-    	Velocity currentVelocity = input.nextInputVelocity();
+    	Velocity currentVelocity = userInput.nextInputVelocity();
     	do
     	{	
     		int x = (int)currentVelocity.getXCoordinate();
@@ -574,7 +574,7 @@ public class Fluid
     		uVelocityNew[x][y] += currentVelocity.getXComponent();
     		vVelocityNew[x][y] += currentVelocity.getYComponent();
     		
-    		currentVelocity = input.nextInputVelocity();
+    		currentVelocity = userInput.nextInputVelocity();
     	} while(currentVelocity != null);
     }
     
