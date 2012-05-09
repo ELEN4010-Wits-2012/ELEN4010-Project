@@ -4,6 +4,8 @@ import java.io.*;
 import java.io.*;
 import java.math.*;
 
+import za.ac.wits.elen4010.fluidsim.gui.SimulationInput;
+import za.ac.wits.elen4010.fluidsim.gui.Velocity;
 import za.ac.wits.elen4010.fluidsim.mpiNodalCode.EdgeData;
 import za.ac.wits.elen4010.fluidsim.mpiNodalCode.RenderData;
 
@@ -27,7 +29,8 @@ public class Fluid
     public int sizeX, sizeY;
     float dt = 0.2f;
     int numGaussSeidelIter = 2;
-
+    
+    SimulationInput input;
     float[] viscosity;
     public float[][] densityOld;            // Remember to remove the public after testing
     float[][] densityNew;
@@ -233,16 +236,18 @@ public class Fluid
     }
 
     /**
-     * Creates a new Fluid simulation with the given size and overlapping characteristics.
+     * Creates a new Fluid simulation with the given size, overlapping characteristics and user input.
      * 
      * @param width The size of the renderable area in the x direction.
      * @param height The size of the renderable area in the y direction.
      * @param overlapSide The side of the simulation on which overlapping occurs.
      * 
-     * @author Justin Worthe
+     * @author Ronald Clark and Justin Worthe
      */
-    public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom )
+    public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
+    	this.input = input;
+    	
     	overlapHeight= overlappingHeight;
     	
         jmax = width - 1;
@@ -553,6 +558,27 @@ public class Fluid
     }
 
     /**
+     * Update the currernt frame's densities and velocities
+     * with the input provided by the user.
+     * 
+     */
+    private void addUserInput()
+    {
+    	Velocity currentVelocity = input.nextInputVelocity();
+    	do
+    	{	
+    		int x = (int)currentVelocity.getXCoordinate();
+    		int y = (int)currentVelocity.getYCoordinate();
+    		
+    		densityNew[x][y] += currentVelocity.getDensity();
+    		uVelocityNew[x][y] += currentVelocity.getXComponent();
+    		vVelocityNew[x][y] += currentVelocity.getYComponent();
+    		
+    		currentVelocity = input.nextInputVelocity();
+    	} while(currentVelocity != null);
+    }
+    
+    /**
      * Perform one simulation step. This updates the density and velocity fields.
      * 
      * (Add Forces) -> Diffuse -> Advect -> Project
@@ -561,6 +587,8 @@ public class Fluid
      */
     public void step()
     {
+    	addUserInput();
+    	
         // Density
         updateSource( t, true, densityOld, densityNew );
         swapRho();
@@ -603,5 +631,6 @@ public class Fluid
                 uVelocityOld[j][i] = vVelocityOld[j][i] = 0;
 
         t = t + dt;
+        
     }
 }
