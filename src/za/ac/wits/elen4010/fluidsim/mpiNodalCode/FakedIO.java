@@ -19,7 +19,7 @@ public class FakedIO implements MpiIO
     /** Status object to be "returned" when the mpiReveive command is called*/
     //private Status receivedStatus;
     /** Fake rank of the current process */
-    static private int myRank;
+    private int myRank;
     /** Fake communicator size */
     private int commWorldSize;
 
@@ -101,13 +101,16 @@ public class FakedIO implements MpiIO
         
         for ( int l = offset; l != count; ++l )
         {
-            data[l] = receivedData[l];
+           // DO NOT USE THIS METHOD IF YOU CHANGE THE TYPE BEING EMULATED FOR RECEIVES
+           // NOTE: you should ensure that the size of the array of render data objects can accomidate the offset and count in this call
+           RenderData tempUpCast = new RenderData( ( ( RenderData )receivedData[l] ).getDensity() );
+           data[l] = tempUpCast;
         }
-        //myRank++;
-        //Status tempStatus = new Status();
-        //tempStatus.source = myRank;
-        //return tempStatus;
-        return new Status();
+
+        myRank++;
+        Status fakeStatus = new Status();
+        fakeStatus.source = myRank;
+        return fakeStatus;
     }
     
     /**

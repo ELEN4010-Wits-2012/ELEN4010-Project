@@ -60,7 +60,7 @@ public class MainNode
      * Initialises slave nodes by sending initial conditions
      * @throws MPIException Throws exception if slave nodes cannot be initialised.
      */
-    private void initiliseSlaveNodes() throws MPIException
+    public void initiliseSlaveNodes() throws MPIException
     {
         long startTime = System.nanoTime();
         
@@ -111,8 +111,11 @@ public class MainNode
                 //Status mpiStatus = commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 
+                // This didn't work:
+                //Status mpiStatus = commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
+                //strip[0].setSourceRank(mpiStatus.source);
+                
                 // Dirty bit of code to correctly set the source of the data for testing purposes:
-                //For some reason, mpiStatus.source doesn't want to work....
                 if( commModule instanceof FakedIO ) {
                     strip[0].setSourceRank(source);
                     System.out.println("Source ======= " + source );
@@ -124,11 +127,7 @@ public class MainNode
                 System.out.println("Master node received data strip from slave");
                 // Add strip to array
                 stripArray[source-1] = strip[0]; int Index = source-1;
-                System.out.println("stripArray [" + Index +"] rank inside for loop >>>>>>>> " + stripArray[source -1].getSourceRank());
             }
-            
-            System.out.println("stripArray [0] rank outside for loop  >>>>>>>> " + stripArray[0].getSourceRank());
-            System.out.println("stripArray [1] rank outside for loop  >>>>>>>> " + stripArray[1].getSourceRank());
             
             System.out.println(Arrays.toString(stripArray));             
             System.out.println("Aggregating a frame");
@@ -151,7 +150,7 @@ public class MainNode
      * @return A RawFrame object containing the aggregated array
      */
     // Function to aggregate subarrays into combined array
-    private RawFrame aggregateData( RenderData[] stripArray )
+    public RawFrame aggregateData( RenderData[] stripArray )
     {
         int segmentHeight = stripArray[0].getYLength();                    
         System.out.println("-----> Segment height = " + segmentHeight);
@@ -159,7 +158,8 @@ public class MainNode
         System.out.println("-----> Segment Width = " + segmentWidth);
         int aggregatedHeight = segmentHeight*(threadCount-1);               // There are threadCount-1 slave nodes
         System.out.println("-----> Aggregated Height = " + aggregatedHeight);     
-        float tempArray[][] = new float[aggregatedHeight][segmentWidth];    // Aggregated array
+        //float tempArray[][] = new float[aggregatedHeight][segmentWidth];    // Aggregated array
+        float tempArray[][] = new float[segmentWidth][aggregatedHeight];
         
         // Copy data objects' content to combined array.
         // Assume the objects are NOT sorted according to rank
@@ -172,16 +172,27 @@ public class MainNode
             int firstSegmentRow = (currentRank - 1)*segmentHeight;       // First row of each new segment
             
             // Copy the rows of each object array to the aggregated array
-            for( int j = 0; j != segmentHeight; j++ )
+            for( int y = 0; y != segmentHeight; y++ )
             {
-                System.arraycopy( density[j], 0, tempArray[j + firstSegmentRow], 0, segmentHeight );
+                for ( int x = 0; x != segmentWidth; x++ )
+                    tempArray[x][y+firstSegmentRow] = density[x][y];
             }
         }
+        //tempArray = transpose(tempArray);
         System.out.println("-----> Finished aggregation = ");
         
         // Return the aggregated array object
         return new RawFrame(tempArray);
     }
-
-
+    
+    /*private float[][] transpose(float[][] array)
+    {
+        float[][] ans = new float[array[0].length][array.length];
+        for(int rows = 0; rows < array.length; rows++){
+                for(int cols = 0; cols < array[0].length; cols++){
+                        ans[cols][rows] = array[rows][cols];
+                }
+        }
+        return ans;
+    }*/
 }
