@@ -31,6 +31,8 @@ public class SlaveNode
     private Fluid fluid ;
     /** The communications module used by the SlaveNodes to communicate to oether nodes*/
     private MpiIO commModule;
+    /** Number of frames to calculate */
+    int frames = 1;
     
     /** Stores messaging tags */
     MessagingTags tags ;
@@ -47,7 +49,7 @@ public class SlaveNode
     public SlaveNode( int slaveNodeRank, int p, MpiIO ioModule )
     {
 
-      commModule = ioModule;
+        commModule = ioModule;
 
     	if (slaveNodeRank != 0)
     	{
@@ -78,27 +80,30 @@ public class SlaveNode
    {
        if (hostInitialised == false)
        {   
-            System.out.println("Initialising fluid for process rank " + MyRank); 
-            if (MyRank == 1)                                            // Top Strip
-            	fluid = new Fluid( 0, 100, 20, 300, true, false );      // ############## HARD CODED ###############
-            else if (MyRank == commSize-1)                              // Bottom Strip
-            	fluid = new Fluid( 0, 100, 20, 300, false, true );      // ############## HARD CODED ###############
-            else                                                        // Middle strip
-                fluid = new Fluid( 0, 100, 20, 300, false, false );     // ############## HARD CODED ###############
-            
-            // Array to store user input objects	   	
+            // Array to store user input objects        
             SimulationInput[] initialConditions = new SimulationInput[1];
             // Receive initial conditions
             commModule.mpiReceive(initialConditions, 0, 1, MPI.OBJECT, HostRank, MessagingTags.Initialcondition_FromServer);
-            System.out.println("Recieved IC to process rank " + MyRank);		
+            System.out.println("Recieved IC to process rank " + MyRank);
+           
+            // Set the number of frames
+            frames = initialConditions[0].getFrameCount();
+           
+            if (MyRank == 1)                          // Top Strip
+            	fluid = new Fluid( 0, 480, 20, 640, true, false, initialConditions[0] );      // ###### DIMENSIONS HARD CODED ######
+            else if (MyRank == commSize-1)            // Bottom Strip
+            	fluid = new Fluid( 0, 480, 20, 640, false, true, initialConditions[0] );      // ###### DIMENSIONS HARD CODED ######
+            else                                      // Middle strip
+                fluid = new Fluid( 0, 480, 20, 640, false, false, initialConditions[0] );     // ###### DIMENSIONS HARD CODED ######
+            System.out.println("Initialising fluid for process rank " + MyRank);
+            		
             
-            // Initialise the Fluid object
-            // XXXXXXXXXX ADD CODE HERE TO INITIALSE THE FLUID OBJECT XXXXXXXXXXX
+            /* Initialise the Fluid object
             // fluid.setUserInput(initialConditions);
             // For now, just set the density as follows:
             for ( int j = 50; j < 90; j++ )
                 for ( int i = 10; i < 53; i++ )
-                    fluid.densityOld[j][i] = 20f;
+                    fluid.densityOld[j][i] = 20f;*/
             
             hostInitialised = true;
 		}
@@ -109,7 +114,7 @@ public class SlaveNode
     * @throws IOException
     * @throws MPIException
     */
-   public void run ( int frames ) throws IOException, MPIException
+   public void run () throws IOException, MPIException
    {
        System.out.println("Running slave process rank " + MyRank);
        

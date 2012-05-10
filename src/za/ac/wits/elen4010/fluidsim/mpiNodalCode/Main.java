@@ -43,25 +43,25 @@ class Main
         TimeCapture.getInstance().setActive( true );     
 
         /** Correct io module to be used for the actual simulation*/
-        MpiIO correctIO = new TrueIO();
+        MpiIO trueIO = new TrueIO();
         
         /** Initialize MPI */
         MPI.Init(args) ;
     
         /** Rank of the current process */
-        int myrank = correctIO.myRank();
+        int myrank = trueIO.myRank();
         /** Size of the communicator */
-        int p = correctIO.commWorldSize();
-        /** Total number of simulation frames */
-        int frames = 2;
+        int p = trueIO.commWorldSize();
+        ///** Total number of simulation frames */
+        //int frames = 2;
 
     
         if(myrank != 0)  // my_rank != 0 => slave node
         {
             try 
             {   //create a slave node
-                SlaveNode LocalSlave = new SlaveNode( myrank, p, correctIO );
-                LocalSlave.run( frames );
+                SlaveNode LocalSlave = new SlaveNode( myrank, p, trueIO );
+                LocalSlave.run();
             
             } catch (UnknownHostException e) {
                 // TODO Auto-generated catch block
@@ -74,8 +74,8 @@ class Main
         }
         else  // my_rank == 0 => master node
         {  
-            MainNode mainNode = MainNode.getInstance( correctIO );
-            mainNode.run( frames );
+            MainNode mainNode = MainNode.getInstance( trueIO );
+            mainNode.run();
         }
      
         TimeCapture.getInstance().writeCSVData();

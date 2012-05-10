@@ -65,17 +65,19 @@ public class MainNode
     {
         long startTime = System.nanoTime();
         
-        /* XXXXXXXXX THIS CODE WILL BE IMPLEMENTED ONCE WE HAVE A TEST FILE XXXXXXXXXXX
+        // Simulation initialisation data
         SimulationInput[] tempInput = new SimulationInput[1];
         // Read initial conditions from file
-        FileReader<SimulationInput> fileReader = new FileReader<SimulationInput>( "test.in" );
-        tempInput[0] = fileReader.readNextFrame();
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+        FileReader<SimulationInput> fileReader = new FileReader<SimulationInput>( "input.in" );
+        tempInput[0] = fileReader.readNextFrame();      // There is only one object that it saves. 
         
-        // For now I'm testing it with null
-        // XXXXXXXXXX REPLACE THIS ONCE WE HAVE A TEST FILE XXXXXXXXXXXXXX
+        // Set the number of frames to calculate
+        frames = tempInput[0].getFrameCount();
+        System.out.println("Number of frame to calculate = " + frames);
+        
+        /*// For now I'm testing it with null
         SimulationInput[] tempInput = new SimulationInput[1];
-        tempInput[0] = null;
+        tempInput[0] = null;*/
         
         // Send initial conditions to all slaves
         for ( int source = 1; source != threadCount; source++ )
@@ -97,7 +99,7 @@ public class MainNode
      * @throws MPIException
      * 
      */
-    public void run( int frames ) throws MPIException
+    public void run() throws MPIException
     {
         long startTime = System.nanoTime();
         
