@@ -32,7 +32,7 @@ public class SlaveNode
     /** The communications module used by the SlaveNodes to communicate to oether nodes*/
     private MpiIO commModule;
     /** Number of frames to calculate */
-    int frames = 1;
+    int frames = 2;
     
     /** Stores messaging tags */
     MessagingTags tags ;

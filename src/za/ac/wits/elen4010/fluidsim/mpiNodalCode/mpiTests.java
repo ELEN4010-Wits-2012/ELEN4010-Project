@@ -54,17 +54,17 @@ class mpiTests {
         // Create a new MainNode
         try{
             MainNode mainNode = MainNode.getInstance( fakeIO );
-            mainNode.run( 2 );  // Frames = 2
+            mainNode.run();                                         // NB: the default number of frames is TWO
         } catch(MPIException e) {
             System.out.println( e.getMessage( ) );
         }
         
         // Read from file to confirm the contents
         RawFrame new_frame = null;
-        //FileReader<RawFrame> fileReader = new FileReader<RawFrame>( "test.in" );
-        //new_frame = fileReader.readNextFrame();
-        //assertEquals(new_frame.getFrame(),data);
-        assertEquals(1,1);
+        FileReader<RawFrame> fileReader = new FileReader<RawFrame>( "test.out" );
+        new_frame = fileReader.readNextFrame();
+        assertEquals(new_frame.getFrame(),data);
+        //assertEquals(1,1);
     }
     
     /**

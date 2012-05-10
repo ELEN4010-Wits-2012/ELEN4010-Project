@@ -65,13 +65,13 @@ public interface MpiIO
      */
     public int commWorldSize() throws MPIException;  
     
-    /*
+    /**
      * Function to initialise the process
      * @param commSize
      *              The size of the world communicator
      * @param currentRank
      *              The current process rank
-     *
-    public void initProcess(int commSize ); */
+     */
+    public void initProcess(int commSize ); 
 
 }

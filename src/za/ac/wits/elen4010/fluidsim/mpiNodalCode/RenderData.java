@@ -51,7 +51,7 @@ public class RenderData implements Serializable
     
     public void setSourceRank( int rank )
     {
-        this.sourceRank = rank;
+        sourceRank = rank;
     }
     
     public int getXLength()

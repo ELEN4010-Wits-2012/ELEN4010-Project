@@ -75,6 +75,7 @@ class Main
         else  // my_rank == 0 => master node
         {  
             MainNode mainNode = MainNode.getInstance( trueIO );
+            mainNode.initiliseSlaveNodes();                         // This needs to be here for testing purposes
             mainNode.run();
         }
      

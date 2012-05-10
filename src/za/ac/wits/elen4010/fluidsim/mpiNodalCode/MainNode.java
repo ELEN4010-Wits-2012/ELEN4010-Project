@@ -24,7 +24,7 @@ public class MainNode
     /** Hold host state - intialised or not*/
     Boolean hostInitialised = false;
     /** Stores the total number of frames */
-    int frames;
+    int frames = 2;
     /** The communications module used by the MainNode to communicate to other nodes*/
     private MpiIO commModule;
     /** Main node singleton instance */
@@ -40,7 +40,6 @@ public class MainNode
         commModule = ioModule;
 		SlaveNodeList.clear();
 		threadCount = commModule.commWorldSize() ;
-		initiliseSlaveNodes();
     }
     
     /**
@@ -75,10 +74,6 @@ public class MainNode
         frames = tempInput[0].getFrameCount();
         System.out.println("Number of frame to calculate = " + frames);
         
-        /*// For now I'm testing it with null
-        SimulationInput[] tempInput = new SimulationInput[1];
-        tempInput[0] = null;*/
-        
         // Send initial conditions to all slaves
         for ( int source = 1; source != threadCount; source++ )
         {
@@ -106,16 +101,15 @@ public class MainNode
         // Loop through total number of specified frames
         for ( int i = 0; i != frames; i++ )
         {
-            RenderData[] stripArray = new RenderData[ threadCount ];    // Stores RenderData objects in an array
+            RenderData[] stripArray = new RenderData[ threadCount-1 ];    // Stores RenderData objects in an array
+                                                                        // Threadcount or threadcount-1 ???
             
-         // Receive frame data from each process
+            // Receive frame data from each process
             for ( int source=1; source != threadCount; source++ )
             {
                 RenderData[] strip = new RenderData[1];
                 //Status mpiStatus = commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
-                //System.out.println("Source of received strip: " + mpiStatus.source);
-                //strip[0].setSourceRank( mpiStatus.source );
                 
                 // Dirty bit of code to correctly set the source of the data for testing purposes:
                 //For some reason, mpiStatus.source doesn't want to work....
@@ -129,12 +123,12 @@ public class MainNode
                     
                 System.out.println("Master node received data strip from slave");
                 // Add strip to array
-                stripArray[source-1] = strip[0]; int temp = source-1;
-                System.out.println("stripArray [" + temp +"] >>>>>>>> " + stripArray[source -1].getSourceRank());
+                stripArray[source-1] = strip[0]; int Index = source-1;
+                System.out.println("stripArray [" + Index +"] rank inside for loop >>>>>>>> " + stripArray[source -1].getSourceRank());
             }
             
-            System.out.println("stripArray [0] >>>>>>>> " + stripArray[0].getSourceRank());
-            System.out.println("stripArray [1] >>>>>>>> " + stripArray[1].getSourceRank());
+            System.out.println("stripArray [0] rank outside for loop  >>>>>>>> " + stripArray[0].getSourceRank());
+            System.out.println("stripArray [1] rank outside for loop  >>>>>>>> " + stripArray[1].getSourceRank());
             
             System.out.println(Arrays.toString(stripArray));             
             System.out.println("Aggregating a frame");
