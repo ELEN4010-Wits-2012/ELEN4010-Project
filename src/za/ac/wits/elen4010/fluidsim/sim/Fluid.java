@@ -565,13 +565,14 @@ public class Fluid
     private void addUserInput()
     {
     	Velocity currentVelocity = userInput.nextInputVelocity();
-
-    	int x = (int)currentVelocity.getXCoordinate();
-    	int y = (int)currentVelocity.getYCoordinate();
-    		
-    	densityNew[x][y] += currentVelocity.getDensity();
-    	uVelocityNew[x][y] += currentVelocity.getXComponent();
-    	vVelocityNew[x][y] += currentVelocity.getYComponent();
+    	if( currentVelocity != null ) {
+	    	int x = (int)currentVelocity.getXCoordinate();
+	    	int y = (int)currentVelocity.getYCoordinate();
+	    		
+	    	densityNew[x][y] += currentVelocity.getDensity();
+	    	uVelocityNew[x][y] += currentVelocity.getXComponent();
+	    	vVelocityNew[x][y] += currentVelocity.getYComponent();
+    	}
   
     }
     
