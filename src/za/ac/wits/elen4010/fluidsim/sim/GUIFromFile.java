@@ -18,7 +18,7 @@ import java.io.ObjectInputStream;
  * 
  * Warning: Quick and nasty is NASTY. This class should disappear after the integration build.
  * 
- * @author Justin Worthe
+ * @author Justin Wernick
  */
 public class GUIFromFile extends JFrame
 {

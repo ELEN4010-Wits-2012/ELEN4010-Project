@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Object for writing the rendering part of the fluid's density to a file.
  * 
- * @author Justin Worthe
+ * @author Justin Wernick
  */
 public class RenderingFluid implements Serializable
 {

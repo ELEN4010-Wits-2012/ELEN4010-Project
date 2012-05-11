@@ -48,7 +48,7 @@ public class Fluid
     /**
      * Enum type used to specify where the overlapping region should be placed.
      * 
-     * @author Justin Worthe
+     * @author Justin Wernick
      */
     public enum Side
     {
@@ -70,7 +70,7 @@ public class Fluid
      * @param u The new u velocity field for the overlapping region.
      * @param v The new v velocity field for the overlapping region.
      * 
-     * @author Justin Worthe, Ronald Clark
+     * @author Justin Wernick, Ronald Clark
      */
     public void setOverlap( EdgeData overlapData, Side side )
     {
@@ -113,7 +113,7 @@ public class Fluid
      * 
      * @return A jmax by OVERLAP_WIDTH array of density values from the edge.
      * 
-     * @author Justin Worthe, Ronald Clark
+     * @author Justin Wernick, Ronald Clark
      */
     public float[][] getEdgeDensity(Side side)
     {
@@ -152,7 +152,7 @@ public class Fluid
      * 
      * @return A jmax by (renderBottom - renderTop + 1) array of density values.
      * 
-     * @author Justin Worthe
+     * @author Justin Wernick
      */
     public float[][] getRenderDensity()
     {
@@ -184,7 +184,7 @@ public class Fluid
      * 
      * @return A jmax by OVERLAP_WIDTH array of u velocity field values from the edge.
      * 
-     * @author Justin Worthe, Ronald Clark
+     * @author Justin Wernick, Ronald Clark
      */
     public float[][] getEdgeU(Side side)
     {
@@ -212,7 +212,7 @@ public class Fluid
      * 
      * @return A jmax by OVERLAP_WIDTH array of v velocity field values from the edge.
      * 
-     * @author Justin Worthe
+     * @author Justin Wernick
      */
     public float[][] getEdgeV(Side side)
     {
@@ -242,7 +242,7 @@ public class Fluid
      * @param height The size of the renderable area in the y direction.
      * @param overlapSide The side of the simulation on which overlapping occurs.
      * 
-     * @author Ronald Clark and Justin Worthe
+     * @author Ronald Clark and Justin Wernick
      */
     public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
