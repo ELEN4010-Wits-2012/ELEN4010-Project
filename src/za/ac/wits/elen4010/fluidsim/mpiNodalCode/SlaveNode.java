@@ -46,10 +46,11 @@ public class SlaveNode
      * @param slaveNodeRank The rank of the current slave process
      * @param p The size of the entire communicator
      */
-    public SlaveNode( int slaveNodeRank, int p, MpiIO ioModule )
+    public SlaveNode( int slaveNodeRank, int p, MpiIO ioModule ) throws MPIException
     {
 
         commModule = ioModule;
+        commSize = commModule.commWorldSize();
 
     	if (slaveNodeRank != 0)
     	{
@@ -88,13 +89,20 @@ public class SlaveNode
            
             // Set the number of frames
             frames = initialConditions[0].getFrameCount();
-           
+            
+            // Set the offset value
+            final int xDim = 640; final int yDim = 480;                     // HARD CODED
+            int stripHeightMin = yDim/(commSize-1);                         // Rounds down
+            System.out.println("stripHeightMin =========== " + stripHeightMin);
+            int stripHeightMax = (int)Math.ceil(yDim/(float)(commSize-1));       // Rounds up
+            System.out.println("stripHeightMax =========== " + stripHeightMax);
+                    
             if (MyRank == 1)                          // Top Strip
-            	fluid = new Fluid( 0, 480, 20, 640, true, false, initialConditions[0] );      // ###### DIMENSIONS HARD CODED ######
+            	fluid = new Fluid( 0, stripHeightMin, 20, xDim, true, false, initialConditions[0] );      
             else if (MyRank == commSize-1)            // Bottom Strip
-            	fluid = new Fluid( 0, 480, 20, 640, false, true, initialConditions[0] );      // ###### DIMENSIONS HARD CODED ######
+            	fluid = new Fluid( (commModule.myRank()-1)*stripHeightMax, stripHeightMax, 20, xDim, false, true, initialConditions[0] );      
             else                                      // Middle strip
-                fluid = new Fluid( 0, 480, 20, 640, false, false, initialConditions[0] );     // ###### DIMENSIONS HARD CODED ######
+                fluid = new Fluid( (commModule.myRank()-1)*stripHeightMin, stripHeightMin, 20, xDim, false, false, initialConditions[0] );    
             System.out.println("Initialising fluid for process rank " + MyRank);
             		
             
