@@ -92,7 +92,7 @@ public class TimeCapture
             }
     
             // If the node was in the list the function shouldn't reach this point
-            timedProcesses.add( new LabelNode( functionName ) );
+            timedProcesses.add( new LabelNode( processName ) );
             timedProcesses.get( timedProcesses.size() - 1 ).addSubEvent( functionName, timeDelta );
         }
 
