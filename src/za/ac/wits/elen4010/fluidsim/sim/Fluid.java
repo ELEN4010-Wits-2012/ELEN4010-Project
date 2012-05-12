@@ -42,6 +42,8 @@ public class Fluid
     float[][] curl;
     float[][] source;
     float t;
+    int topRow = 0;
+    int FluidHeight = 100;      // Default value
 
     public int overlapHeight = 20; // Size of the overlapping region.
 
@@ -247,6 +249,8 @@ public class Fluid
     public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
     	this.userInput = userInput;
+    	this.topRow = topRowNum;
+    	this.FluidHeight = renderingHeight;
     	
     	overlapHeight= overlappingHeight;
     	
@@ -566,12 +570,18 @@ public class Fluid
     {
     	Velocity currentVelocity = userInput.nextInputVelocity();
     	if( currentVelocity != null ) {
-	    	int x = (int)currentVelocity.getXCoordinate();
-	    	int y = (int)currentVelocity.getYCoordinate();
-	    		
-	    	densityNew[x][y] += currentVelocity.getDensity();
-	    	uVelocityNew[x][y] += currentVelocity.getXComponent();
-	    	vVelocityNew[x][y] += currentVelocity.getYComponent();
+	    	
+    	    int x_input = (int)currentVelocity.getXCoordinate();
+	    	int y_input = (int)currentVelocity.getYCoordinate();
+	    	
+	    	if( y_input >= topRow && y_input < (topRow + FluidHeight) ) {         // Are these limits correct??
+	    	    
+	    	    int x = x_input;
+	    	    int y = y_input - topRow;                          // Eliminate the offset
+	    	    densityNew[x][y] += currentVelocity.getDensity();
+	            uVelocityNew[x][y] += currentVelocity.getXComponent();
+	            vVelocityNew[x][y] += currentVelocity.getYComponent();
+	    	}
     	}
   
     }
