@@ -103,6 +103,8 @@ public class MainNode
         {
             RenderData[] stripArray = new RenderData[ threadCount-1 ];    // Stores RenderData objects in an array
                                                                         // Threadcount or threadcount-1 ???
+            // Write received frames to file
+            FileWriter<RawFrame> fileWriter = new FileWriter<RawFrame>( "test.out" );
             
             // Receive frame data from each process
             for ( int source=1; source != threadCount; source++ )
@@ -134,8 +136,6 @@ public class MainNode
             RawFrame new_frame = aggregateData(stripArray);                      // Aggregate the strips
             System.out.println("Frame aggregated, sending to file!");
 
-            // Write received frames to file
-            FileWriter<RawFrame> fileWriter = new FileWriter<RawFrame>( "test.out" );
             fileWriter.writeSimulationData( new_frame );
         }
         
