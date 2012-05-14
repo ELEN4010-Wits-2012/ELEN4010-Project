@@ -25,28 +25,29 @@ import za.ac.wits.elen4010.fluidsim.mpiNodalCode.RenderData;
  */
 public class Fluid
 {
-    public int jmax, imax;
-    public int sizeX, sizeY;
-    float dt = 0.2f;
-    int numGaussSeidelIter = 2;
+    private int jmax, imax;
+    private int sizeX, sizeY;
+    private float dt = 0.2f;
+    private int numGaussSeidelIter = 25;
     
-    SimulationInput userInput;
-    float[] viscosity;
-    public float[][] densityOld;            // Remember to remove the public after testing
-    float[][] densityNew;
-    float[][] tmp;
-    float[][] uVelocityOld;
-    float[][] uVelocityNew;
-    float[][] vVelocityOld;
-    float[][] vVelocityNew;
-    float[][] curl;
-    float[][] source;
-    float t;
-    int topRow = 0;
-    int FluidHeight = 100;      // Default value
+    private SimulationInput userInput;
+    private float[] viscosity;
+    private float[][] densityOld;            // Remember to remove the public after testing
+    private float[][] densityNew;
+    private float[][] tmp;
+    private float[][] uVelocityOld;
+    private float[][] uVelocityNew;
+    private float[][] vVelocityOld;
+    private float[][] vVelocityNew;
+    private float[][] curl;
+    private float[][] source;
+    private float t;
+    private int topRow = 0;
+    private int FluidHeight = 100;      // Default value
 
-    public int overlapHeight = 20; // Size of the overlapping region.
+    private int overlapHeight = 20; // Size of the overlapping region.
 
+    
     /**
      * Enum type used to specify where the overlapping region should be placed.
      * 
@@ -58,12 +59,12 @@ public class Fluid
     };
 
     // Indices of regions. The overlapping region and edge are both OVERLAP_WIDTH wide.
-    int renderTop;
-    int renderBottom;
-    int overlapTop;
-    int overlapBottom;
-    int edgeTop;
-    int edgeBottom;
+    private int renderTop;
+    private int renderBottom;
+    private int overlapTop;
+    private int overlapBottom;
+    private int edgeTop;
+    private int edgeBottom;
    
     /**
      * Sets the overlapping region to the given values.
@@ -117,7 +118,7 @@ public class Fluid
      * 
      * @author Justin Wernick, Ronald Clark
      */
-    public float[][] getEdgeDensity(Side side)
+    private float[][] getEdgeDensity(Side side)
     {
     	int edgeStart;
     	if( side == Side.TOP )
@@ -156,7 +157,7 @@ public class Fluid
      * 
      * @author Justin Wernick
      */
-    public float[][] getRenderDensity()
+    private float[][] getRenderDensity()
     {
         float[][] result = new float[jmax + 1][renderBottom - renderTop + 1];
 
@@ -188,7 +189,7 @@ public class Fluid
      * 
      * @author Justin Wernick, Ronald Clark
      */
-    public float[][] getEdgeU(Side side)
+    private float[][] getEdgeU(Side side)
     {
     	int edgeStart;
     	if( side == Side.TOP )
@@ -216,7 +217,7 @@ public class Fluid
      * 
      * @author Justin Wernick
      */
-    public float[][] getEdgeV(Side side)
+    private float[][] getEdgeV(Side side)
     {
     	int edgeStart;
     	if( side == Side.TOP )
@@ -249,7 +250,7 @@ public class Fluid
     public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
     	this.userInput = userInput;
-    	this.topRow = topRowNum;
+    	this.topRow = isTop ? topRowNum : topRowNum-overlappingHeight;
     	this.FluidHeight = renderingHeight;
     	
     	overlapHeight= overlappingHeight;
@@ -291,7 +292,7 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void setBoundary( int boundaryType, float[][] field )
+    private void setBoundary( int boundaryType, float[][] field )
     {
         for ( int k = 1; k <= sizeX; k++ )
         {
@@ -314,7 +315,7 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void calculateCurl()
+    private void calculateCurl()
     {
         for ( int j = 1; j <= sizeX; j++ )
         {
@@ -333,7 +334,7 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void addVorticity()
+    private void addVorticity()
     {
         calculateCurl();
         for ( int j = 2; j < sizeX; j++ )
@@ -364,7 +365,7 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void addBouyancy( float[][] velocityField )
+    private void addBouyancy( float[][] velocityField )
     {
         float ambientTemperature = 0.0f;
         float a = 0.000625f;
@@ -463,7 +464,7 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void updateSource( float t, boolean clampToZero, float[][] xOld, float[][] xNew )
+    private void updateSource( float t, boolean clampToZero, float[][] xOld, float[][] xNew )
     {
         for ( int j = 0; j <= jmax; j++ )
         {
@@ -482,7 +483,7 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void adjustVelocity( float t, float[][] u, float[][] v )
+    private void adjustVelocity( float t, float[][] u, float[][] v )
     {
         int i, j;
         float[][] div = new float[jmax + 1][imax + 1];
@@ -521,9 +522,9 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
-    void solveLinearSystem( int boundaryType, float[][] X, float[][] A, float a, float c )
+    private void solveLinearSystem( int boundaryType, float[][] X, float[][] A, float a, float c )
     {
-        for ( int k = 0; k < 25; k++ )
+        for ( int k = 0; k < numGaussSeidelIter; k++ )
         {
             for ( int i = 1; i <= sizeY; i++ )
             {
@@ -540,21 +541,21 @@ public class Fluid
      * Swap the old and new density fields.
      * 
      */
-    void swapRho()
+    private void swapRho()
     {
         tmp = densityNew;
         densityNew = densityOld;
         densityOld = tmp;
     }
 
-    void swapU()
+    private void swapU()
     {
         tmp = uVelocityOld;
         uVelocityOld = uVelocityNew;
         uVelocityNew = tmp;
     }
 
-    void swapV()
+    private void swapV()
     {
         tmp = vVelocityOld;
         vVelocityOld = vVelocityNew;
@@ -574,13 +575,13 @@ public class Fluid
     	    int x_input = (int)currentVelocity.getXCoordinate();
 	    	int y_input = (int)currentVelocity.getYCoordinate();
 	    	
-	    	if( y_input >= topRow && y_input < (topRow + FluidHeight) ) {         // Are these limits correct??
-	    	    
+	    	if( y_input >= topRow && y_input <= (topRow + imax) ) 
+	    	{  
 	    	    int x = x_input;
 	    	    int y = y_input - topRow;                          // Eliminate the offset
-	    	    densityNew[x][y] += currentVelocity.getDensity();
-	            uVelocityNew[x][y] += currentVelocity.getXComponent();
-	            vVelocityNew[x][y] += currentVelocity.getYComponent();
+	    	    densityOld[x][y] += currentVelocity.getDensity();
+	            uVelocityOld[x][y] += currentVelocity.getXComponent();
+	            vVelocityOld[x][y] += currentVelocity.getYComponent();
 	    	}
     	}
   
