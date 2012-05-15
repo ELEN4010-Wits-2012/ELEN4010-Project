@@ -10,19 +10,19 @@ import za.ac.wits.elen4010.fluidsim.mpiNodalCode.EdgeData;
 import za.ac.wits.elen4010.fluidsim.mpiNodalCode.RenderData;
 
 /**
-* Class representing a fluid.
-*
-* The simulation algorithm is based on the popular Navier-Stokes solver
-* created by Jos Stam. The original paper is available here:
-* www.dgp.toronto.edu/people/stam/reality/Research/pdf/GDC03.pdf
-* <p>
-* The fluid has a density field and two velocity fields u and v (one for each dimension).
-* The fluid can be split vertically into two regions: the rendering and the overlapping regions. The overlapping region
-* is not rendered, and belongs to an adjacent fluid. The overlapping region should be updated to match the appropriate
-* edge of the adjacent fluid after every step.
-*
-* @author Ronald Clark
-*/
+ * Class representing a fluid. 
+ * 
+ * The simulation algorithm is based on the popular Navier-Stokes solver
+ * created by Jos Stam. The original paper is available here: 
+ * www.dgp.toronto.edu/people/stam/reality/Research/pdf/GDC03.pdf
+ * <p>
+ * The fluid has a density field and two velocity fields u and v (one for each dimension).
+ * The fluid can be split vertically into two regions: the rendering and the overlapping regions. The overlapping region
+ * is not rendered, and belongs to an adjacent fluid. The overlapping region should be updated to match the appropriate
+ * edge of the adjacent fluid after every step.
+ * 
+ * @author Ronald Clark
+ */
 public class Fluid
 {
     private int jmax, imax;
@@ -32,11 +32,7 @@ public class Fluid
     
     private SimulationInput userInput;
     private float[] viscosity;
-<<<<<<< HEAD
-    private float[][] densityOld; // Remember to remove the public after testing
-=======
     private float[][] densityOld;            // Remember to remove the public after testing
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private float[][] densityNew;
     private float[][] tmp;
     private float[][] uVelocityOld;
@@ -47,20 +43,16 @@ public class Fluid
     private float[][] source;
     private float t;
     private int topRow = 0;
-<<<<<<< HEAD
-    private int FluidHeight = 100; // Default value
-=======
     private int FluidHeight = 100;      // Default value
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
 
     private int overlapHeight = 20; // Size of the overlapping region.
 
     
     /**
-* Enum type used to specify where the overlapping region should be placed.
-*
-* @author Justin Wernick
-*/
+     * Enum type used to specify where the overlapping region should be placed.
+     * 
+     * @author Justin Wernick
+     */
     public enum Side
     {
         TOP, BOTTOM
@@ -75,23 +67,23 @@ public class Fluid
     private int edgeBottom;
    
     /**
-* Sets the overlapping region to the given values.
-*
-* @param density The new density for the overlapping region.
-* @param u The new u velocity field for the overlapping region.
-* @param v The new v velocity field for the overlapping region.
-*
-* @author Justin Wernick, Ronald Clark
-*/
+     * Sets the overlapping region to the given values.
+     * 
+     * @param density The new density for the overlapping region.
+     * @param u The new u velocity field for the overlapping region.
+     * @param v The new v velocity field for the overlapping region.
+     * 
+     * @author Justin Wernick, Ronald Clark
+     */
     public void setOverlap( EdgeData overlapData, Side side )
     {
-     int overlapStart;
-     if( side == Side.TOP )
-     overlapStart = overlapTop;
-     else
-     overlapStart = overlapBottom;
+        int overlapStart;
+        if( side == Side.TOP )
+            overlapStart = overlapTop;
+        else 
+            overlapStart = overlapBottom;
     
-    
+        
         for ( int j = 0; j <= jmax; ++j )
         {
             for ( int i = 0; i < overlapHeight; ++i )
@@ -104,45 +96,36 @@ public class Fluid
     }
     
     /**
-* Gets the edge data (density, u and v velocity) encapsulated
-* as an <code>EdgeData</code> object.
-*
-* @see EdgeData
-*
-* @return The edge data values
-*
-* @author Ronald Clark
-*
-*/
+     * Gets the edge data (density, u and v velocity) encapsulated
+     * as an <code>EdgeData</code> object.
+     * 
+     * @see EdgeData
+     * 
+     * @return The edge data values
+     * 
+     * @author Ronald Clark
+     * 
+     */
     public EdgeData getEdge( Side side )
     {
-     return new EdgeData(getEdgeDensity(side), getEdgeU(side), getEdgeV(side));
+        return new EdgeData(getEdgeDensity(side), getEdgeU(side), getEdgeV(side));
     }
     
     /**
-<<<<<<< HEAD
-* Gets the density from the edge next to the overlapping region.
-*
-* @return A jmax by OVERLAP_WIDTH array of density values from the edge.
-*
-* @author Justin Wernick, Ronald Clark
-*/
-=======
      * Gets the density from the edge next to the overlapping region.
      * 
      * @return A jmax by OVERLAP_WIDTH array of density values from the edge.
      * 
      * @author Justin Wernick, Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private float[][] getEdgeDensity(Side side)
     {
-     int edgeStart;
-     if( side == Side.TOP )
-     edgeStart = edgeTop;
-     else
-     edgeStart = edgeBottom;
-    
+        int edgeStart;
+        if( side == Side.TOP )
+            edgeStart = edgeTop;
+        else 
+            edgeStart = edgeBottom;
+        
         float[][] result = new float[jmax + 1][overlapHeight];
 
         for ( int j = 0; j <= jmax; ++j )
@@ -157,32 +140,23 @@ public class Fluid
     }
     
     /**
-* Gets the render data encapsulated as a <code>RenderData</code>
-* object.
-*
-* @return the render data
-*/
+     * Gets the render data encapsulated as a <code>RenderData</code>
+     * object.
+     * 
+     * @return the render data
+     */
     public RenderData getRenderData()
     {
-     return new RenderData( getRenderDensity() );
+        return new RenderData( getRenderDensity() );
     }
     
     /**
-<<<<<<< HEAD
-* Gets the density from the rendering region.
-*
-* @return A jmax by (renderBottom - renderTop + 1) array of density values.
-*
-* @author Justin Wernick
-*/
-=======
      * Gets the density from the rendering region.
      * 
      * @return A jmax by (renderBottom - renderTop + 1) array of density values.
      * 
      * @author Justin Wernick
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private float[][] getRenderDensity()
     {
         float[][] result = new float[jmax + 1][renderBottom - renderTop + 1];
@@ -198,40 +172,31 @@ public class Fluid
         return result;
     }
     
-    /**
-* Gets the current elapsed time in the simulation.
-*
-* @return The amount time in seconds that has been simulated so far.
-*/
+    /** 
+     * Gets the current elapsed time in the simulation.
+     * 
+     * @return The amount time in seconds that has been simulated so far.
+     */
     public float getTime()
     {
         return t;
     }
 
     /**
-<<<<<<< HEAD
-* Gets the u velocity field from the edge next to the overlapping region.
-*
-* @return A jmax by OVERLAP_WIDTH array of u velocity field values from the edge.
-*
-* @author Justin Wernick, Ronald Clark
-*/
-=======
      * Gets the u velocity field from the edge next to the overlapping region.
      * 
      * @return A jmax by OVERLAP_WIDTH array of u velocity field values from the edge.
      * 
      * @author Justin Wernick, Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private float[][] getEdgeU(Side side)
     {
-     int edgeStart;
-     if( side == Side.TOP )
-     edgeStart = edgeTop;
-     else
-     edgeStart = edgeBottom;
-    
+        int edgeStart;
+        if( side == Side.TOP )
+            edgeStart = edgeTop;
+        else 
+            edgeStart = edgeBottom;
+        
         float[][] result = new float[jmax + 1][overlapHeight];
 
         for ( int j = 0; j <= jmax; ++j )
@@ -246,29 +211,20 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Gets the v velocity field from the edge next to the overlapping region.
-*
-* @return A jmax by OVERLAP_WIDTH array of v velocity field values from the edge.
-*
-* @author Justin Wernick
-*/
-=======
      * Gets the v velocity field from the edge next to the overlapping region.
      * 
      * @return A jmax by OVERLAP_WIDTH array of v velocity field values from the edge.
      * 
      * @author Justin Wernick
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private float[][] getEdgeV(Side side)
     {
-     int edgeStart;
-     if( side == Side.TOP )
-     edgeStart = edgeTop;
-     else
-     edgeStart = edgeBottom;
-    
+        int edgeStart;
+        if( side == Side.TOP )
+            edgeStart = edgeTop;
+        else 
+            edgeStart = edgeBottom;
+        
         float[][] result = new float[jmax + 1][overlapHeight];
 
         for ( int j = 0; j <= jmax; ++j )
@@ -283,38 +239,29 @@ public class Fluid
     }
 
     /**
-* Creates a new Fluid simulation with the given size, overlapping characteristics and user input.
-*
-* @param width The size of the renderable area in the x direction.
-* @param height The size of the renderable area in the y direction.
-* @param overlapSide The side of the simulation on which overlapping occurs.
-*
-* @author Ronald Clark and Justin Wernick
-*/
+     * Creates a new Fluid simulation with the given size, overlapping characteristics and user input.
+     * 
+     * @param width The size of the renderable area in the x direction.
+     * @param height The size of the renderable area in the y direction.
+     * @param overlapSide The side of the simulation on which overlapping occurs.
+     * 
+     * @author Ronald Clark and Justin Wernick
+     */
     public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
-<<<<<<< HEAD
-     this.userInput = userInput;
-     this.topRow = isTop ? topRowNum : topRowNum-overlappingHeight;
-     this.FluidHeight = renderingHeight;
-    
-     overlapHeight= overlappingHeight;
-    
-=======
-    	this.userInput = userInput;
-    	this.topRow = isTop ? topRowNum : topRowNum-overlappingHeight;
-    	this.FluidHeight = renderingHeight;
-    	
-    	overlapHeight= overlappingHeight;
-    	
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
+        this.userInput = userInput;
+        this.topRow = isTop ? topRowNum : topRowNum-overlappingHeight;
+        this.FluidHeight = renderingHeight;
+        
+        overlapHeight= overlappingHeight;
+        
         jmax = width - 1;
         imax = (isTop || isBottom) ? renderingHeight - 1 + overlapHeight : renderingHeight - 1 + 2*overlapHeight;
 
         sizeX = jmax - 2;
         sizeY = imax - 2;
 
-        overlapTop = 0;
+        overlapTop =  0;
         overlapBottom = (isTop || isBottom) ? renderingHeight : overlapHeight + renderingHeight;
         edgeTop = overlapHeight;
         edgeBottom = isTop ? renderingHeight - overlapHeight : renderingHeight - overlapHeight + overlapHeight;
@@ -336,17 +283,6 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Sets the value of boundary cells. X velocity on the left and right boundary is opposite to that of the inner cell
-* adjacent to it. X velocity on the top and bottom is equal to that of the inner cell adjacent to it.
-*
-* @param boundaryType the type of boundary to set. 1 = x velocity 2 = y velocity
-*
-* @param field the field on which to set the boundary
-*
-* @author Ronald Clark
-*/
-=======
      * Sets the value of boundary cells. X velocity on the left and right boundary is opposite to that of the inner cell
      * adjacent to it. X velocity on the top and bottom is equal to that of the inner cell adjacent to it.
      * 
@@ -356,7 +292,6 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void setBoundary( int boundaryType, float[][] field )
     {
         for ( int k = 1; k <= sizeX; k++ )
@@ -376,17 +311,10 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Calculates the z component of the curl of the 2 dimensional velocity field. Stores the result in curl.
-*
-* @author Ronald Clark
-*/
-=======
      * Calculates the z component of the curl of the 2 dimensional velocity field. Stores the result in curl.
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void calculateCurl()
     {
         for ( int j = 1; j <= sizeX; j++ )
@@ -401,19 +329,11 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Enhances the strength of vortices. A rotational velocity is added to the velocity field wherever there is a large
-* amount of rotation (curl). This enhances the swirls in the liquid and prevents them from dissipating.
-*
-* @author Ronald Clark
-*/
-=======
      * Enhances the strength of vortices. A rotational velocity is added to the velocity field wherever there is a large
      * amount of rotation (curl). This enhances the swirls in the liquid and prevents them from dissipating.
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void addVorticity()
     {
         calculateCurl();
@@ -440,19 +360,11 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Simulate the floating movement of the fluid due to hot areas. The density of the fluid is used as an indication
-* of the temperature.
-*
-* @author Ronald Clark
-*/
-=======
      * Simulate the floating movement of the fluid due to hot areas. The density of the fluid is used as an indication
      * of the temperature.
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void addBouyancy( float[][] velocityField )
     {
         float ambientTemperature = 0.0f;
@@ -478,15 +390,15 @@ public class Fluid
     }
 
     /**
-* Diffuse the fluid by moving density out of the current cell to the four adjacent cells and into the current cell
-* from the adjacent cells. This is done in reverse. See ****
-*
-* @param boundaryType specifies the type of field being diffused
-* @param sOld the field values during the previous timestep
-* @param sNew the field values during the current timestep
-*
-* @author Ronald Clark
-*/
+     * Diffuse the fluid by moving density out of the current cell to the four adjacent cells and into the current cell
+     * from the adjacent cells. This is done in reverse. See ****
+     * 
+     * @param boundaryType specifies the type of field being diffused
+     * @param sOld the field values during the previous timestep
+     * @param sNew the field values during the current timestep
+     * 
+     * @author Ronald Clark
+     */
     private void diffuse( int boundaryType, float[][] sOld, float[][] sNew )
     {
         float a = dt * sizeX * sizeY * viscosity[0];
@@ -495,17 +407,17 @@ public class Fluid
     }
 
     /**
-* Move a field along with the velocity field. Linear interpolation of the four nearest points is used to find the
-* new value of the cell.
-*
-* @param boundaryType specifies the type of field being advected
-* @param uVelocity the x-velocity field to move along
-* @param vVelocity the y-velocity field to move along
-* @param fieldOld the field values during the previous timestep
-* @param fieldNew the field values during the current timestep
-*
-* @author Ronald Clark
-*/
+     * Move a field along with the velocity field. Linear interpolation of the four nearest points is used to find the
+     * new value of the cell.
+     * 
+     * @param boundaryType specifies the type of field being advected
+     * @param uVelocity the x-velocity field to move along
+     * @param vVelocity the y-velocity field to move along
+     * @param fieldOld the field values during the previous timestep
+     * @param fieldNew the field values during the current timestep
+     * 
+     * @author Ronald Clark
+     */
     private void advect( int boundaryType, float[][] uVelocity, float[][] vVelocity, float[][] fieldOld, float[][] fieldNew )
     {
         float dt0 = dt * sizeX;
@@ -545,15 +457,6 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Add sources to a field. The sources are specified in the 'old' field vector.
-*
-* @param xOld vector containing the sources
-* @param xNew the field to add the sources to
-*
-* @author Ronald Clark
-*/
-=======
      * Add sources to a field. The sources are specified in the 'old' field vector.
      * 
      * @param xOld vector containing the sources
@@ -561,7 +464,6 @@ public class Fluid
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void updateSource( float t, boolean clampToZero, float[][] xOld, float[][] xNew )
     {
         for ( int j = 0; j <= jmax; j++ )
@@ -575,21 +477,12 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Make the velocity field divergence-free ie. mass conserving. This is done by computing the 'potential' field phi
-* by solving the poisson equations. The divergence of phi is then subtracted from the original field, leaving only
-* the curl (rotational)-component of the field.
-*
-* @author Ronald Clark
-*/
-=======
      * Make the velocity field divergence-free ie. mass conserving. This is done by computing the 'potential' field phi
      * by solving the poisson equations. The divergence of phi is then subtracted from the original field, leaving only
      * the curl (rotational)-component of the field.
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void adjustVelocity( float t, float[][] u, float[][] v )
     {
         int i, j;
@@ -623,21 +516,12 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Solves a linear system of equations using the Gauss-Seidel method.
-*
-* A = BX
-*
-* @author Ronald Clark
-*/
-=======
      * Solves a linear system of equations using the Gauss-Seidel method.
      * 
      * A = BX
      * 
      * @author Ronald Clark
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void solveLinearSystem( int boundaryType, float[][] X, float[][] A, float a, float c )
     {
         for ( int k = 0; k < numGaussSeidelIter; k++ )
@@ -654,15 +538,9 @@ public class Fluid
     }
 
     /**
-<<<<<<< HEAD
-* Swap the old and new density fields.
-*
-*/
-=======
      * Swap the old and new density fields.
      * 
      */
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
     private void swapRho()
     {
         tmp = densityNew;
@@ -685,59 +563,41 @@ public class Fluid
     }
 
     /**
-* Update the currernt frame's densities and velocities
-* with the input provided by the user.
-*
-*/
+     * Update the currernt frame's densities and velocities
+     * with the input provided by the user.
+     * 
+     */
     private void addUserInput()
     {
-<<<<<<< HEAD
-     Velocity currentVelocity = userInput.nextInputVelocity();
-     if( currentVelocity != null ) {
-
-     int x_input = (int)currentVelocity.getXCoordinate();
-int y_input = (int)currentVelocity.getYCoordinate();
-
-if( y_input >= topRow && y_input <= (topRow + imax) )
-{
-int x = x_input;
-int y = y_input - topRow; // Eliminate the offset
-densityOld[x][y] += currentVelocity.getDensity();
-uVelocityOld[x][y] += currentVelocity.getXComponent();
-vVelocityOld[x][y] += currentVelocity.getYComponent();
-}
-     }
-=======
-    	Velocity currentVelocity = userInput.nextInputVelocity();
-    	if( currentVelocity != null ) {
-	    	
-    	    int x_input = (int)currentVelocity.getXCoordinate();
-	    	int y_input = (int)currentVelocity.getYCoordinate();
-	    	
-	    	if( y_input >= topRow && y_input <= (topRow + imax) ) 
-	    	{  
-	    	    int x = x_input;
-	    	    int y = y_input - topRow;                          // Eliminate the offset
-	    	    densityOld[x][y] += currentVelocity.getDensity();
-	            uVelocityOld[x][y] += currentVelocity.getXComponent();
-	            vVelocityOld[x][y] += currentVelocity.getYComponent();
-	    	}
-    	}
->>>>>>> 3d52ec32d2e0edc2911c774933ef054f7f2ab387
+        Velocity currentVelocity = userInput.nextInputVelocity();
+        if( currentVelocity != null ) {
+            
+            int x_input = (int)currentVelocity.getXCoordinate();
+            int y_input = (int)currentVelocity.getYCoordinate();
+            
+            if( y_input >= topRow && y_input <= (topRow + imax) ) 
+            {  
+                int x = x_input;
+                int y = y_input - topRow;                          // Eliminate the offset
+                densityOld[x][y] += currentVelocity.getDensity();
+                uVelocityOld[x][y] += currentVelocity.getXComponent();
+                vVelocityOld[x][y] += currentVelocity.getYComponent();
+            }
+        }
   
     }
     
     /**
-* Perform one simulation step. This updates the density and velocity fields.
-*
-* (Add Forces) -> Diffuse -> Advect -> Project
-*
-* @author Ronald Clark
-*/
+     * Perform one simulation step. This updates the density and velocity fields.
+     * 
+     * (Add Forces) -> Diffuse -> Advect -> Project
+     * 
+     * @author Ronald Clark
+     */
     public void step()
     {
-     addUserInput();
-    
+        addUserInput();
+        
         // Density
         updateSource( t, true, densityOld, densityNew );
         swapRho();
