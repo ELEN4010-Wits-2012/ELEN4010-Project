@@ -99,17 +99,17 @@ public class SlaveNode
                     
             if (MyRank == 1)                          // Top Strip
             {
-            	fluid = new Fluid( 0, stripHeightMin, 25, xDim, true, false, initialConditions[0] ); 
+            	fluid = new Fluid( 0, stripHeightMin, 20, xDim, true, false, initialConditions[0] ); 
             	System.out.println("Top strip: " + xDim + " by " + stripHeightMin);
             }
             else if (MyRank == commSize-1)            // Bottom Strip
             {
-            	fluid = new Fluid( (MyRank-1)*stripHeightMax, stripHeightMax, 25, xDim, false, true, initialConditions[0] );
+            	fluid = new Fluid( (MyRank-1)*stripHeightMax, stripHeightMax, 20, xDim, false, true, initialConditions[0] );
             	System.out.println("Bottom Strip " + commModule.myRank()+ ": " + xDim + " by " + stripHeightMax);
             }
             else                                      // Middle strip
             {
-                fluid = new Fluid( (MyRank-1)*stripHeightMin, stripHeightMin, 25, xDim, false, false, initialConditions[0] );
+                fluid = new Fluid( (MyRank-1)*stripHeightMin, stripHeightMin, 20, xDim, false, false, initialConditions[0] );
                 System.out.println("Middle Strip: " + xDim + " by " + stripHeightMin);
             }
             System.out.println("Initialising fluid for process rank " + MyRank);
