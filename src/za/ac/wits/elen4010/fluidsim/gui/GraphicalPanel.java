@@ -84,27 +84,45 @@ public class GraphicalPanel extends JPanel
      * @param nextFrame
      *             The data for the next frame. In the form of a RawFrame type
      */
-    public void setImage( RawFrame nextFrame )
+public void setImage( RawFrame nextFrame )
+{
+
+    long startTime = System.nanoTime();
+
+    float[][] frameData = nextFrame.getFrame();
+    float amplify = 0 ;
+    float nextIntensity = 0;
+    float maxIntensity = 0;
+
+    // ASSERT THAT ITS THE CORRECT SIZE HERE!!
+
+    for ( int l = 0; l != windowSize.getWidth(); ++l )
     {
-        long startTime = System.nanoTime();
-        
-        float[][] frameData = nextFrame.getFrame();
-
-        // ASSERT THAT ITS THE CORRECT SIZE HERE!!
-
-        for ( int l = 0; l != windowSize.getWidth(); ++l )
+        for ( int L = 0; L != windowSize.getHeight(); ++L )
         {
-            for ( int L = 0; L != windowSize.getHeight(); ++L )
+        nextIntensity = frameData[l][L];
+            if ( nextIntensity > maxIntensity )
             {
-                int intensity = (int)( frameData[l][L] ) % MAX_DEPTH;
-                Color intensityColor = new Color( intensity, intensity, intensity );
-                renderedImage.setRGB( l, L, intensityColor.getRGB() );
+                maxIntensity = nextIntensity;
             }
+        int intensity = (int)(( ( nextIntensity / maxIntensity ) * MAX_DEPTH ) % MAX_DEPTH);
+        //amplify = frameData[l][L] * (10^16);
+        //int intensity = (int)( frameData[l][L] ) % MAX_DEPTH;
+        //int intensity = (int)( amplify ) % MAX_DEPTH;
+
+        if (intensity > 0)
+        {
+        System.out.println("Intensity: "+ l + "," +L + " : " + intensity);
+        }
+
+        Color intensityColor = new Color( intensity, intensity, intensity );
+        renderedImage.setRGB( l, L, intensityColor.getRGB() );
+        }
         }
 
         long elapsedTime = System.nanoTime() - startTime;
         TimeCapture.getInstance().addTimedEvent( "gui", "setImage", elapsedTime );
 
-    }
+}
 
 }
