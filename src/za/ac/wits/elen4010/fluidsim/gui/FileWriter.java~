@@ -85,7 +85,6 @@ public class FileWriter<T>
         try
         {
            // outFile.writeObject( inputData );
-           outFile.reset();
            outFile.writeUnshared( inputData );
            System.out.println("WRITE INITIAL PRINT: " + inputData);
             outFile.flush();
@@ -107,6 +106,18 @@ public class FileWriter<T>
 
         return outFilePath;
 
+    }
+       public void resetOutPutStream()
+    {
+ try
+        {
+        outFile.reset();
+               }
+        catch ( IOException couldntWriteNewObject )
+        {
+            System.err.println( "Couldn't write a new object to the simulation input file (the output file for this program)" );
+            couldntWriteNewObject.printStackTrace( System.err );
+        }
     }
 
 }

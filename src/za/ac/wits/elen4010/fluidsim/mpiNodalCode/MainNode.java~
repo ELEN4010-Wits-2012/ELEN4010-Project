@@ -188,9 +188,7 @@ public class MainNode
             int currentRank = stripArray[i].getSourceRank();
             System.out.println("-----> Aggregating from rank = " + currentRank);
             float density[][] = stripArray[i].getDensity();
-            // Graham - sement height gets set here:
             int segmentHeight = stripArray[i].getYLength();
-            
             int firstSegmentRow = (currentRank - 1)*segmentHeight;       // First row of each new segment
             
             // Copy the rows of each object array to the aggregated array

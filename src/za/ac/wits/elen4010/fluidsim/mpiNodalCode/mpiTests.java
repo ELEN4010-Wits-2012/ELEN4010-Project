@@ -128,6 +128,7 @@ class mpiTests {
         // The file will contain two concatenated testInputAggregate.in arrays 
         RawFrame testFrame = null;
         FileReader<RawFrame> fileReader3 = new FileReader<RawFrame>( "testInputRun.in" );       // could also test.out here
+        fileReader3.resetFile( "testInputRun.in" );
         testFrame = fileReader3.readNextFrame();
         
         assertEquals(aggregatedtFrame, testFrame);

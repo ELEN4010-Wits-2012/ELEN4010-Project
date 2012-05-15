@@ -1,0 +1,16 @@
+
+#!/bin/bash
+
+testFolder = "testResults"
+mkdir -p $testFolder
+for i in {2..5}
+do
+
+    #EXECUTE THE MPI PROGRAM
+    echo "Starting execution of $i threads"
+    #mpiexec -n $i java za.ac.wits.elen4010.fluidsim.mpiNodalCode.Main
+    
+    #NOW CLEAN UP AFTER IT
+
+    
+done

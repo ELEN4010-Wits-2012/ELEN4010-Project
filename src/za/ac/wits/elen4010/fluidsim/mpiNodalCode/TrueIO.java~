@@ -68,8 +68,8 @@ public class TrueIO implements MpiIO
      */
     public Status mpiReceive( Object[] data, int offset, int count, Datatype dataType, int source, int tag ) throws MPIException
     {
-      return   MPI.COMM_WORLD.Recv( data, offset, count, dataType, source, tag );
-       // return new Status();
+        MPI.COMM_WORLD.Recv( data, offset, count, dataType, source, tag );
+        return new Status();
     }
     
     /**

@@ -17,7 +17,7 @@ import java.io.OutputStream;
 /**
  * Prototyping GUI for running Fluid simulations in one thread.
  * 
- * @author Justin Worthe and Ronald Clark
+ * @author Justin Wernick and Ronald Clark
  */
 public class GUI extends JFrame
 {

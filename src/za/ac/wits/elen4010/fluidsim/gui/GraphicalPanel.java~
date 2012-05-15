@@ -112,7 +112,7 @@ public void setImage( RawFrame nextFrame )
 
         if (intensity > 0)
         {
-        System.out.println("Intensity: "+ l + "," +L + " : " + intensity);
+        System.out.println("Intensity: "+ intensity);
         }
 
         Color intensityColor = new Color( intensity, intensity, intensity );
