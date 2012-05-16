@@ -105,6 +105,7 @@ public class SlaveNode
             }
             else if (MyRank == commSize-1)            // Bottom Strip
             {
+            	stripHeight = yDim - (stripHeight*(commSize-2)); //calculates the height of the other stips combined, and makes the last one the size needed to make the total yDim
             	fluid = new Fluid( (MyRank-1)*stripHeight, stripHeight, 20, xDim, false, true, initialConditions[0] );
             	System.out.println("Bottom Strip " + commModule.myRank()+ ": " + xDim + " by " + stripHeight);
             }
