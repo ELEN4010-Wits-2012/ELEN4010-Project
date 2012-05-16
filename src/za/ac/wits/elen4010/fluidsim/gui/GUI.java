@@ -45,7 +45,7 @@ class GUI
     /** Name of the main window*/
     private final static String APPLICATION_NAME = "Fluidation";
     /** Dimensions of the capture and rendering screens*/
-    private final static Dimension APPLICATION_DIMENSIONS = new Dimension( 640, 480 );
+    private final static Dimension APPLICATION_DIMENSIONS = new Dimension( 1440, 1080 );
     /** Dimensions of the menu panel*/
     private final static Dimension MENU_DIMENSIONS = new Dimension( 300, 570 );
     /** Default colour for display and capture panels*/
