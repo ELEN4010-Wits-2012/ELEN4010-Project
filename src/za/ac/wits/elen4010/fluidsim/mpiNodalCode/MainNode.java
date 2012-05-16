@@ -190,7 +190,7 @@ public class MainNode
             float density[][] = stripArray[i].getDensity();
             // Graham - sement height gets set here:
             int segmentHeight = stripArray[i].getYLength();
-           
+                          
             int firstSegmentRow = (currentRank - 1)*segmentHeight;       // First row of each new segment
 
             // Copy the rows of each object array to the aggregated array
@@ -201,11 +201,7 @@ public class MainNode
                 {
                         for ( int x = 0; x != segmentWidth; x++ )
                         {
-                            //try{ 
-                                tempArray[x][y+firstSegmentRow] = density[x][y];
-                            //} catch (Exception e) {
-                            //    e.printStackTrace();
-                            //}
+                            tempArray[x][y+firstSegmentRow] = density[x][y];
                         }
                 }
             
