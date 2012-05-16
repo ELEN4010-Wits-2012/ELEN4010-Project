@@ -63,4 +63,18 @@ public class RenderData implements Serializable
     {
         return yLength;
     }
+     public void PrintDensity()
+    {
+    printArray(density,"RenderData:");
+    }
+     public void printArray(float[][] array, String message)
+    {
+        System.out.println("======== Printing " + message + " array =======");
+        for (int y = 0; y != array[0].length; ++y) {
+            for (int x = 0; x != array.length; ++x) {       // Could also use System.arraycopy()
+                System.out.print(array[x][y] + "|");
+            }
+            System.out.println("New row");
+        }
+    }
 }

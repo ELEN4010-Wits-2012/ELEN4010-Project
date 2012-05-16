@@ -5,7 +5,10 @@ import za.ac.wits.elen4010.fluidsim.gui.*;
 
 import java.net.*;
 import java.util.*;
-
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 /**
  * Main class representing the main node
  * @author Graham Peyton
@@ -29,6 +32,9 @@ public class MainNode
     private MpiIO commModule;
     /** Main node singleton instance */
     private static MainNode mainNodeInstance = null;
+    private static float tempArray[][];
+    private static RawFrame nextSimulationOutput ;
+       
     
     /**
      * Main node constructor.
@@ -40,6 +46,10 @@ public class MainNode
         commModule = ioModule;
 		SlaveNodeList.clear();
 		threadCount = commModule.commWorldSize() ;
+		
+		tempArray = new float[1440][1080];
+		nextSimulationOutput = new RawFrame(tempArray);
+		System.out.println( "CON INITIAL PRINT: " + nextSimulationOutput );
     }
     
     /**
@@ -97,19 +107,21 @@ public class MainNode
     public void run() throws MPIException
     {
         long startTime = System.nanoTime();
+    
+         // Write received frames to file
+            FileWriter<RawFrame> fileWriter = new FileWriter<RawFrame>( "test.out" );
+         RenderData[] stripArray = new RenderData[ threadCount-1 ];    // Stores RenderData objects in an array
+                                                                        // Threadcount or threadcount-1 ???
+        RenderData[] strip = new RenderData[1];
         
         // Loop through total number of specified frames
         for ( int i = 0; i != frames; i++ )
         {
-            RenderData[] stripArray = new RenderData[ threadCount-1 ];    // Stores RenderData objects in an array
-                                                                        // Threadcount or threadcount-1 ???
-            // Write received frames to file
-            FileWriter<RawFrame> fileWriter = new FileWriter<RawFrame>( "test.out" );
-            
+           
             // Receive frame data from each process
             for ( int source=1; source != threadCount; source++ )
             {
-                RenderData[] strip = new RenderData[1];
+                
                 //Status mpiStatus = commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 commModule.mpiReceive(strip, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, MessagingTags.RenderDataFromSlave);
                 
@@ -118,30 +130,35 @@ public class MainNode
                 //strip[0].setSourceRank(mpiStatus.source);
                 
                 // Dirty bit of code to correctly set the source of the data for testing purposes:
-                if( commModule instanceof FakedIO ) {
+                if( commModule instanceof FakedIO ) 
+                {
                     strip[0].setSourceRank(source);
                     System.out.println("Source ======= " + source );
                 }
-                else if( commModule instanceof TrueIO ) {
-                    // Do nothing
-                }
+       
                     
                 System.out.println("Master node received data strip from slave");
                 // Add strip to array
                 stripArray[source-1] = strip[0]; int Index = source-1;
             }
+
             
             System.out.println(Arrays.toString(stripArray));             
             System.out.println("Aggregating a frame");
             RawFrame new_frame = aggregateData(stripArray);                      // Aggregate the strips
             System.out.println("Frame aggregated, sending to file!");
 
+            System.out.println( "RUN INITIAL PRINT: " + new_frame );
+            
             fileWriter.writeSimulationData( new_frame );
+  
+
         }
-        
+  
         long elapsedTime = System.nanoTime() - startTime;
         TimeCapture.getInstance().addTimedEvent( "0", "run", elapsedTime );
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
     }
     
     /**
@@ -152,15 +169,17 @@ public class MainNode
     // Function to aggregate subarrays into combined array
     public RawFrame aggregateData( RenderData[] stripArray )
     {
-        int segmentHeight = stripArray[0].getYLength();                    
+       /* int segmentHeight = stripArray[0].getYLength();                    
         System.out.println("-----> Segment height = " + segmentHeight);
         int segmentWidth = stripArray[0].getXLength();
         System.out.println("-----> Segment Width = " + segmentWidth);
-        int aggregatedHeight = segmentHeight*(threadCount-1);               // There are threadCount-1 slave nodes
+        int aggregatedHeight =;               // There are threadCount-1 slave nodes
         System.out.println("-----> Aggregated Height = " + aggregatedHeight);     
         //float tempArray[][] = new float[aggregatedHeight][segmentWidth];    // Aggregated array
-        float tempArray[][] = new float[segmentWidth][aggregatedHeight];
-        
+       */
+       
+       
+        int segmentWidth =  1440;
         // Copy data objects' content to combined array.
         // Assume the objects are NOT sorted according to rank
         // The rank of each object corresponds to the index: i+1
@@ -169,20 +188,36 @@ public class MainNode
             int currentRank = stripArray[i].getSourceRank();
             System.out.println("-----> Aggregating from rank = " + currentRank);
             float density[][] = stripArray[i].getDensity();
+            // Graham - sement height gets set here:
+            int segmentHeight = stripArray[i].getYLength();
+                          
             int firstSegmentRow = (currentRank - 1)*segmentHeight;       // First row of each new segment
-            
+
             // Copy the rows of each object array to the aggregated array
-            for( int y = 0; y != segmentHeight; y++ )
-            {
-                for ( int x = 0; x != segmentWidth; x++ )
-                    tempArray[x][y+firstSegmentRow] = density[x][y];
-            }
+            System.out.println("-----> Seg height = " + segmentHeight + " , firstSegmentRow = " + firstSegmentRow + "Aggregated height = " + segmentHeight*(threadCount-1));
+            
+            
+                for( int y = 0; y != segmentHeight; y++ )
+                {
+                        for ( int x = 0; x != segmentWidth; x++ )
+                        {
+                            tempArray[x][y+firstSegmentRow] = density[x][y];
+                        }
+                }
+            
+            
         }
         //tempArray = transpose(tempArray);
         System.out.println("-----> Finished aggregation = ");
         
         // Return the aggregated array object
-        return new RawFrame(tempArray);
+        //return new RawFrame(tempArray);
+        
+        nextSimulationOutput.setFrame(tempArray);
+        
+        return nextSimulationOutput ;
+        
+        
     }
     
     /*private float[][] transpose(float[][] array)

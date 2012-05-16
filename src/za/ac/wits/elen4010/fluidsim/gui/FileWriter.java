@@ -84,7 +84,10 @@ public class FileWriter<T>
 
         try
         {
-            outFile.writeObject( inputData );
+           // outFile.writeObject( inputData );
+           outFile.reset();
+           outFile.writeUnshared( inputData );
+           System.out.println("WRITE INITIAL PRINT: " + inputData);
             outFile.flush();
         }
         catch ( IOException couldntWriteNewObject )

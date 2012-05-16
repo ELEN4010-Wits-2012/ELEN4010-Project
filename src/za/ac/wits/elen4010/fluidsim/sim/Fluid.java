@@ -77,13 +77,13 @@ public class Fluid
      */
     public void setOverlap( EdgeData overlapData, Side side )
     {
-    	int overlapStart;
-    	if( side == Side.TOP )
-    		overlapStart = overlapTop;
-    	else 
-    		overlapStart = overlapBottom;
+        int overlapStart;
+        if( side == Side.TOP )
+            overlapStart = overlapTop;
+        else 
+            overlapStart = overlapBottom;
     
-    	
+        
         for ( int j = 0; j <= jmax; ++j )
         {
             for ( int i = 0; i < overlapHeight; ++i )
@@ -108,7 +108,7 @@ public class Fluid
      */
     public EdgeData getEdge( Side side )
     {
-    	return new EdgeData(getEdgeDensity(side), getEdgeU(side), getEdgeV(side));
+        return new EdgeData(getEdgeDensity(side), getEdgeU(side), getEdgeV(side));
     }
     
     /**
@@ -120,12 +120,12 @@ public class Fluid
      */
     private float[][] getEdgeDensity(Side side)
     {
-    	int edgeStart;
-    	if( side == Side.TOP )
-    		edgeStart = edgeTop;
-    	else 
-    		edgeStart = edgeBottom;
-    	
+        int edgeStart;
+        if( side == Side.TOP )
+            edgeStart = edgeTop;
+        else 
+            edgeStart = edgeBottom;
+        
         float[][] result = new float[jmax + 1][overlapHeight];
 
         for ( int j = 0; j <= jmax; ++j )
@@ -147,7 +147,7 @@ public class Fluid
      */
     public RenderData getRenderData()
     {
-    	return new RenderData( getRenderDensity() );
+        return new RenderData( getRenderDensity() );
     }
     
     /**
@@ -191,12 +191,12 @@ public class Fluid
      */
     private float[][] getEdgeU(Side side)
     {
-    	int edgeStart;
-    	if( side == Side.TOP )
-    		edgeStart = edgeTop;
-    	else 
-    		edgeStart = edgeBottom;
-    	
+        int edgeStart;
+        if( side == Side.TOP )
+            edgeStart = edgeTop;
+        else 
+            edgeStart = edgeBottom;
+        
         float[][] result = new float[jmax + 1][overlapHeight];
 
         for ( int j = 0; j <= jmax; ++j )
@@ -219,12 +219,12 @@ public class Fluid
      */
     private float[][] getEdgeV(Side side)
     {
-    	int edgeStart;
-    	if( side == Side.TOP )
-    		edgeStart = edgeTop;
-    	else 
-    		edgeStart = edgeBottom;
-    	
+        int edgeStart;
+        if( side == Side.TOP )
+            edgeStart = edgeTop;
+        else 
+            edgeStart = edgeBottom;
+        
         float[][] result = new float[jmax + 1][overlapHeight];
 
         for ( int j = 0; j <= jmax; ++j )
@@ -249,12 +249,12 @@ public class Fluid
      */
     public Fluid( int topRowNum, int renderingHeight, int overlappingHeight, int width, boolean isTop, boolean isBottom, SimulationInput userInput )
     {
-    	this.userInput = userInput;
-    	this.topRow = isTop ? topRowNum : topRowNum-overlappingHeight;
-    	this.FluidHeight = renderingHeight;
-    	
-    	overlapHeight= overlappingHeight;
-    	
+        this.userInput = userInput;
+        this.topRow = isTop ? topRowNum : topRowNum-overlappingHeight;
+        this.FluidHeight = renderingHeight;
+        
+        overlapHeight= overlappingHeight;
+        
         jmax = width - 1;
         imax = (isTop || isBottom) ? renderingHeight - 1 + overlapHeight : renderingHeight - 1 + 2*overlapHeight;
 
@@ -267,7 +267,7 @@ public class Fluid
         edgeBottom = isTop ? renderingHeight - overlapHeight : renderingHeight - overlapHeight + overlapHeight;
         
         renderTop = isTop ? 0 : overlapHeight;
-        renderBottom = isTop ? renderingHeight - 1 : imax;
+        renderBottom = isTop ? renderingHeight - 1 : renderingHeight - 1 + overlapHeight;
 
         viscosity = new float[] { 0, 0 };
         densityOld = new float[jmax + 1][imax + 1];
@@ -569,21 +569,21 @@ public class Fluid
      */
     private void addUserInput()
     {
-    	Velocity currentVelocity = userInput.nextInputVelocity();
-    	if( currentVelocity != null ) {
-	    	
-    	    int x_input = (int)currentVelocity.getXCoordinate();
-	    	int y_input = (int)currentVelocity.getYCoordinate();
-	    	
-	    	if( y_input >= topRow && y_input <= (topRow + imax) ) 
-	    	{  
-	    	    int x = x_input;
-	    	    int y = y_input - topRow;                          // Eliminate the offset
-	    	    densityOld[x][y] += currentVelocity.getDensity();
-	            uVelocityOld[x][y] += currentVelocity.getXComponent();
-	            vVelocityOld[x][y] += currentVelocity.getYComponent();
-	    	}
-    	}
+        Velocity currentVelocity = userInput.nextInputVelocity();
+        if( currentVelocity != null ) {
+            
+            int x_input = (int)currentVelocity.getXCoordinate();
+            int y_input = (int)currentVelocity.getYCoordinate();
+            
+            if( y_input >= topRow && y_input <= (topRow + imax) ) 
+            {  
+                int x = x_input;
+                int y = y_input - topRow;                          // Eliminate the offset
+                densityOld[x][y] += currentVelocity.getDensity();
+                uVelocityOld[x][y] += currentVelocity.getXComponent();
+                vVelocityOld[x][y] += currentVelocity.getYComponent();
+            }
+        }
   
     }
     
@@ -596,8 +596,8 @@ public class Fluid
      */
     public void step()
     {
-    	addUserInput();
-    	
+        addUserInput();
+        
         // Density
         updateSource( t, true, densityOld, densityNew );
         swapRho();

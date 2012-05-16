@@ -103,17 +103,12 @@ public class GraphicalPanel extends JPanel
         long startTime = System.nanoTime();
 
         float[][] frameData = nextFrame.getFrame();
-        float amplify = 0 ;
         float nextIntensity = 0;
         float maxIntensity = 0;
 
-        // ASSERT THAT ITS THE CORRECT SIZE HERE!!
-
         for ( int l = 0; l != windowSize.getWidth(); ++l )
-        //for ( int l = 0; l != 480; ++l )
         {
             for ( int L = 0; L != windowSize.getHeight(); ++L )
-            //for ( int L = 0; L != 640; ++L )
             {
                 nextIntensity = frameData[l][L];
                 if ( nextIntensity > maxIntensity )
@@ -121,12 +116,11 @@ public class GraphicalPanel extends JPanel
                     maxIntensity = nextIntensity;
                 }
                 int intensity = ( int )( ( nextIntensity / maxIntensity ) * MAX_DEPTH ) % MAX_DEPTH;
-                //amplify = frameData[l][L] * (10^16);
-                //int intensity = (int)( frameData[l][L] ) % MAX_DEPTH;
-                //int intensity = (int)( amplify ) % MAX_DEPTH;
 
                 Color intensityColor = new Color( intensity, intensity, intensity );
                 renderedImage.setRGB( l, L, intensityColor.getRGB() );
+
+
             }
         }
 

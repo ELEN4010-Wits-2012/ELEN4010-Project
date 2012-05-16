@@ -91,18 +91,28 @@ public class SlaveNode
             frames = initialConditions[0].getFrameCount();
             
             // Set the offset value
-            final int xDim = 640; final int yDim = 480;                     // HARD CODED
-            int stripHeightMin = yDim/(commSize-1);                         // Rounds down
-            System.out.println("stripHeightMin =========== " + stripHeightMin);
-            int stripHeightMax = (int)Math.ceil(yDim/(float)(commSize-1));       // Rounds up
-            System.out.println("stripHeightMax =========== " + stripHeightMax);
+            final int xDim = 1440; final int yDim = 1080;                   // HARD CODED
+            //int stripHeightMin = yDim/(commSize-1);                         // Rounds down
+            //System.out.println("stripHeightMin =========== " + stripHeightMin);
+            //int stripHeightMax = (int)Math.ceil(yDim/(float)(commSize-1));       // Rounds up
+            int stripHeight = yDim/(commSize-1);
+            //System.out.println("stripHeightMax ===== " + stripHeightMax + "stripHeightMin ===== " + stripHeightMin);
                     
             if (MyRank == 1)                          // Top Strip
-            	fluid = new Fluid( 0, stripHeightMin, 20, xDim, true, false, initialConditions[0] );      
+            {
+            	fluid = new Fluid( 0, stripHeight, 20, xDim, true, false, initialConditions[0] ); 
+            	System.out.println("Top strip: " + xDim + " by " + stripHeight);
+            }
             else if (MyRank == commSize-1)            // Bottom Strip
-            	fluid = new Fluid( (commModule.myRank()-1)*stripHeightMax, stripHeightMax, 20, xDim, false, true, initialConditions[0] );      
+            {
+            	fluid = new Fluid( (MyRank-1)*stripHeight, stripHeight, 20, xDim, false, true, initialConditions[0] );
+            	System.out.println("Bottom Strip " + commModule.myRank()+ ": " + xDim + " by " + stripHeight);
+            }
             else                                      // Middle strip
-                fluid = new Fluid( (commModule.myRank()-1)*stripHeightMin, stripHeightMin, 20, xDim, false, false, initialConditions[0] );    
+            {
+                fluid = new Fluid( (MyRank-1)*stripHeight, stripHeight, 20, xDim, false, false, initialConditions[0] );
+                System.out.println("Middle Strip: " + xDim + " by " + stripHeight);
+            }
             System.out.println("Initialising fluid for process rank " + MyRank);
             		
             
@@ -179,7 +189,10 @@ public class SlaveNode
         RenderData[] tempOut = new RenderData[1];
         tempOut[0] = fluid.getRenderData();
         tempOut[0].setSourceRank( MyRank );
+        System.out.println("Dimensions of rank " + MyRank + " RenderData: " + tempOut[0].getXLength() + " by " + tempOut[0].getYLength());
         commModule.mpiSend( tempOut, 0, 1, MPI.OBJECT, HostRank, MessagingTags.RenderDataFromSlave );
+        
+       // tempOut[0].PrintDensity();
         
         long elapsedTime = System.nanoTime() - startTime;
         TimeCapture.getInstance().addTimedEvent( Integer.toString( MyRank ), "sendRenderData", elapsedTime );

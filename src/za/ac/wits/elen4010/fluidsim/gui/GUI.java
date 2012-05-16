@@ -457,6 +457,7 @@ class GUI
 
         while( nextFrame != null )
         {
+            System.out.println( "Displaying next frame" );
             while ( System.currentTimeMillis() - startTime < 33 )
             {
                 try
