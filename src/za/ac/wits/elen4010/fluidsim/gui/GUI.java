@@ -52,6 +52,8 @@ class GUI
     private final static Color APPLICATION_PANEL_COLOUR = Color.black;
     /** Stores the amount of time (in milliseconds) that the application should wait before polling the state of a subframe*/
     private final static int MAIN_THREAD_WAIT_TIME = 100;
+    /** The amount that the waiting loop should wait at each iteration*/
+    private final static int DISPLAY_WAIT_TIME = 5;
     /** Stores the program programs data processor to be used in every data capture session*/
     private static DataProcessor programDataProcessor = new DataProcessor( APPLICATION_DIMENSIONS );
     /** Stores the name of the file that should be used to read data to the program*/
@@ -457,12 +459,11 @@ class GUI
 
         while( nextFrame != null )
         {
-            System.out.println( "Displaying next frame" );
-            while ( System.currentTimeMillis() - startTime < 33 )
+            while ( ( System.currentTimeMillis() - startTime ) < 33 )
             {
                 try
                 {
-                    Thread.sleep( MAIN_THREAD_WAIT_TIME );
+                    Thread.sleep( DISPLAY_WAIT_TIME );
                 }
                 catch ( InterruptedException ExecutionPrematurelyInterrupted )
                 {
