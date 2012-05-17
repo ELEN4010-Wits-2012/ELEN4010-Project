@@ -1,4 +1,4 @@
-package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
+package za.ac.wits.elen4010.fluidsim.tests;
 
 import java.io.IOException;
 import java.util.Random;

@@ -1,4 +1,6 @@
-package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
+package za.ac.wits.elen4010.fluidsim.tests;
+
+import za.ac.wits.elen4010.fluidsim.mpiNodalCode.RenderData;
 
 import static org.junit.Assert.*;
 
