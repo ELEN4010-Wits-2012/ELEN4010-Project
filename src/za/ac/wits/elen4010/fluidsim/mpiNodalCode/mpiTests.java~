@@ -1,0 +1,60 @@
+package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
+
+import java.io.IOException;
+
+public class mpiTest {
+
+    // Test 
+
+    /*// Test that host is found. If an exception is thrown and not caught, the test will fail.
+    @Test
+    public void testUnKnownHostExceptionNotThrown() throws UnknownHostException, IOException
+    {
+        String hostname = new String("api.wunderground.com");
+        final int port = 80;
+        HTTPclient client = new HTTPclient();
+        client.setupHTTP(hostname, port);
+    }
+    
+    // Test that a ParseException is thrown if incorrect JSON text is supplied
+    // If an exception is thrown and not caught, the test will fail.
+    @Test(expected=ParseException.class)
+    public void testParseExceptionIsThrownIfWrongJSONFormat() throws Exception
+    {
+        String jsonText = "[[null, 123.45, \"a\\tb c\"]}, true";
+        Conditions cond = new Conditions(jsonText);
+    }
+    
+    @Test(expected=ParseException.class)
+    public void testParseExceptionIsThrownIfNoJSON() throws Exception
+    {
+        String jsonText = "";
+        Conditions cond = new Conditions(jsonText);
+    }
+    
+    @Test
+    public void testConditionsReturnsCorrectTime() throws Exception
+    {
+        String jsonText = "{\"current_observation\":{\"observation_time_rfc822\":\"Tue, 01 May 2012 17:00:00 +0200\"," +
+            "\"weather\":\"Clear\",\"temp_c\":25}}";
+        String time = "Tue, 01 May 2012 17:00:00 +0200";
+        Conditions cond = new Conditions(jsonText);
+        assertEquals(time, cond.getObservationTime());
+    }
+
+    @Test
+    public void testConditionsReturnsCorrectWeather() throws Exception
+    {
+        String jsonText = "{\"current_observation\":{\"observation_time_rfc822\":\"Tue, 01 May 2012 17:00:00 +0200\"," +
+            "\"weather\":\"Clear\",\"temp_c\":25}}";
+        String weather = "Clear";
+        Conditions cond = new Conditions(jsonText);
+        assertEquals(weather, cond.getWeather());
+    }*/
+
+
+    
+}
+
+
+
