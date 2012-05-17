@@ -12,10 +12,6 @@
         <javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.build}" classpath="${mpi.classes}:${dir.lib}/junit-4.10.jar"/>
     </target>
 
-    <target name="compileWithTests" depends="compile" description="Compile source code, unit tests not excluded">
-        <javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.build}" includes="${dir.src}/za/ac/wits/elen4010/fluidsim/tests" classpath="${dir.lib}/junit-4.10.jar" />
-    </target>
-
     <target name="run" depends="compile">
         <java dir="${dir.build}" classpath="${dir.build}" classname="za.ac.wits.elen4010.fluidsim.gui.GUI" fork="true"/>
     </target>
