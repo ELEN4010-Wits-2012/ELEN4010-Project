@@ -16,12 +16,6 @@
         <java dir="${dir.build}" classpath="${dir.build}" classname="za.ac.wits.elen4010.fluidsim.gui.GUI" fork="true"/>
     </target>
 
-    <target name="mpiTest" depends="compile">
-        <exec executable="mpiexec"> 
-            <arg line="-n 2 -hosts 127.0.0.1 java Main"/>
-        </exec>
-    </target>
-
     <target name="test" depends="compile">
         <java classname="org.junit.runner.JUnitCore" classpath="${dir.build}:${mpi.classes}:${dir.lib}/junit-4.10.jar" fork="true">
             <arg value="za.ac.wits.elen4010.fluidsim.tests.EdgeDataTest" />
