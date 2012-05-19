@@ -27,6 +27,8 @@
             <arg value="za.ac.wits.elen4010.fluidsim.tests.EdgeDataTest" />
             <arg value="za.ac.wits.elen4010.fluidsim.tests.RenderDataTest" />
             <arg value="za.ac.wits.elen4010.fluidsim.tests.mpiTests" />
+            <arg value="za.ac.wits.elen4010.fluidsim.tests.GUITests" />
         </java>
     </target>
+
 </project>
