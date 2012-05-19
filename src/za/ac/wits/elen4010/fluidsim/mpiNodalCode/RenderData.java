@@ -25,18 +25,25 @@ public class RenderData implements Serializable
      */
     public RenderData( float[][] density )
     {        
-        this.density = new float[density.length][];
-            
-        for (int x = 0; x < density.length; ++x)
+        if (density == null)
         {
-            this.density[x] = new float[density[x].length];
-            for (int y = 0; y != density[x].length; ++y)
-            {
-                this.density[x][y] = density[x][y];
-            }
+            throw new RuntimeException("Error: attempting to initialise a null density array in RenderData");
         }
-        xLength = density.length;
-        yLength = density[0].length;
+        else
+        {
+            this.density = new float[density.length][];
+                
+            for (int x = 0; x < density.length; ++x)
+            {
+                this.density[x] = new float[density[x].length];
+                for (int y = 0; y != density[x].length; ++y)
+                {
+                    this.density[x][y] = density[x][y];
+                }
+            }
+            xLength = density.length;
+            yLength = density[0].length;
+        }
     }
     
     public float[][] getDensity()
@@ -51,7 +58,10 @@ public class RenderData implements Serializable
     
     public void setSourceRank( int rank )
     {
-        sourceRank = rank;
+        if(rank < 1)
+            throw new RuntimeException("Cannot set rank to less than 1");
+        else
+            sourceRank = rank;
     }
     
     public int getXLength()
