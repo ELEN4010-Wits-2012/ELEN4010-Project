@@ -38,7 +38,7 @@ public class mpiTests {
          */
         RawFrame dataInput = null;
 
-        FileReader<RawFrame> fileReader1 = new FileReader<RawFrame>( "testInputRun.in" );
+        FileReader<RawFrame> fileReader1 = new FileReader<RawFrame>( "testdata/testInputRun.in" );
         dataInput = fileReader1.readNextFrame();
         
         // dataTemp is split exactly half of the dataInput array.
@@ -74,8 +74,8 @@ public class mpiTests {
         
         // -------------- Read from file to confirm the contents ----------------
         RawFrame testFrame = null;
-        FileReader<RawFrame> fileReader2 = new FileReader<RawFrame>( "test.out" );
-        fileReader2.resetFile( "test.out" ); testFrame = dataInput;
+        FileReader<RawFrame> fileReader2 = new FileReader<RawFrame>( "testdata/test.out" );
+        fileReader2.resetFile( "testdata/test.out" ); testFrame = dataInput;
         //testFrame = fileReader2.readNextFrame();
         
         float[][] tempRawFrame = testFrame.getFrame();
@@ -111,7 +111,7 @@ public class mpiTests {
         // ---------------- Generate test input -----------------
         /* 
          */
-        FileReader<RenderData> reader = new FileReader<RenderData>( "testInputAggregate.in" );
+        FileReader<RenderData> reader = new FileReader<RenderData>( "testdata/testInputAggregate.in" );
         RenderData[] renderArray = new RenderData[2]; RawFrame testFrames = null;
         renderArray[0] = reader.readNextFrame(); renderArray[0].setSourceRank(1);
         renderArray[1] = renderArray[0]; renderArray[1].setSourceRank(2);
@@ -131,8 +131,8 @@ public class mpiTests {
         // -------------- Read from file to confirm the contents ----------------
         // The file will contain two concatenated testInputAggregate.in arrays 
         RawFrame testFrame = null;
-        FileReader<RawFrame> fileReader3 = new FileReader<RawFrame>( "testInputRun.in" );       // could also test.out here
-        fileReader3.resetFile( "testInputRun.in" );
+        FileReader<RawFrame> fileReader3 = new FileReader<RawFrame>( "testdata/testInputRun.in" );       // could also test.out here
+        fileReader3.resetFile( "testdata/testInputRun.in" );
         testFrame = fileReader3.readNextFrame();
         
         assertEquals(aggregatedtFrame, testFrames);
