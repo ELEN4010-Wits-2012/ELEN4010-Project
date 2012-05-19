@@ -30,7 +30,7 @@ public class DataProcessor
     /** Stores the dimensions of the area used to capture data*/
     private Dimension captureDimensions;
     /** Stores the time in milli seconds between samples (set for 30hz sampling i.e. t = 1/30)*/
-    private static final float SAMPLE_TIME = 1f / 30;
+    private static final Long SAMPLE_TIME = 33L;
     /** Stores the file writer used to generate input data for the server*/
     private static FileWriter<SimulationInput> outputWriter;
 
@@ -48,7 +48,7 @@ public class DataProcessor
         long accumulatedTime = 0;
         Velocity nextVelocity = null;
 
-        while( ( searchStartingPoint.hasNext() ) && ( accumulatedTime < SAMPLE_TIME ) )
+        while( ( searchStartingPoint.hasNext() ) && ( accumulatedTime <= SAMPLE_TIME ) )
         {
             nextVelocity = searchStartingPoint.next();
             accumulatedTime += nextVelocity.getSampleTime() - startTime;
@@ -231,6 +231,7 @@ public class DataProcessor
         Velocity nextVelocity = currentVelocity.next();
         long startTime = nextVelocity.getSampleTime();
         List<Velocity> sampling = new Vector<Velocity>();
+
         while ( currentVelocity.hasNext() )
         {
             nextVelocity = currentVelocity.previous();
@@ -245,15 +246,6 @@ public class DataProcessor
         long benchmarkElapsedTime = System.nanoTime() - benchmarkStartTime;
         TimeCapture.getInstance().addTimedEvent( "gui", "writeSimulationInput", benchmarkElapsedTime );
         return true;
-
-    }
-
-    // TEMP FOR DEBUGGING PURPOSES!!
-    public void printArrays()
-    {
-
-        System.out.println( samplePoints );
-        System.out.println( velocities );
 
     }
 

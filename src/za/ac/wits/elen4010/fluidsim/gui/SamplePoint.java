@@ -46,8 +46,6 @@ public class SamplePoint
         timeStamp = proposedTimeStamp;
         density = proposedDensity;
 
-
-
     }
 
     /** Simple function to get the density of a SamplePoint

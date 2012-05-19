@@ -34,7 +34,7 @@ public class SimulationInput implements Serializable
     private Dimension renderFrameDimensions;
 
     /** Stores an iterator to the next velocity to be taken from the vector of velocities*/
-    private ListIterator<Velocity> nextVelocity = null;
+    private transient ListIterator<Velocity> nextVelocity = null;
 
     // ===Public Methods===
 

@@ -55,10 +55,17 @@ public class Velocity implements Serializable
     public Velocity( int deltaX, int deltaY, long deltaTime, long velocitySampleTime, int xPlacement, int yPlacement, float sampleDensity )
     {
 
-        // DEBUG!! Check that this operation is upcasting correctly
+        if ( deltaTime == 0 )
+        {
+            xVelocity = Float.MAX_VALUE;
+            yVelocity = Float.MAX_VALUE;
+        }
+        else
+        {
+            xVelocity = (float)deltaX / deltaTime;
+            yVelocity = (float)deltaY / deltaTime;
+        }
         sampleTime = velocitySampleTime;
-        xVelocity = (float)deltaX / deltaTime;
-        yVelocity = (float)deltaY / deltaTime;
         xCoordinate = xPlacement;
         yCoordinate = yPlacement;
         density = sampleDensity;
