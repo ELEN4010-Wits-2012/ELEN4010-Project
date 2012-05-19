@@ -171,7 +171,7 @@ public class mpiTests {
             for( int j = 0; j != length; j++ )
                 dummy[i][j] = 1;
         RenderData data = new RenderData(dummy);
-        int testRank = 1;
+        int testRank = -1;
         data.setSourceRank(testRank);
     }
     
