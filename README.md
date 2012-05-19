@@ -12,6 +12,12 @@ Graham Peyton (309684)
 Justin Wernick (380536)
 Edward Steere (400589)
 
+Prerequisites
+-------------
+MPIJava needs to be present on the computer. The system's CLASSPATH should be set to the mpijava/lib/classes/ folder, and the LD_LIBRARY_PATH variable must be set to the mpijava/lib/ folder.
+MPIJava is available at http://www.hpjava.org/mpiJava.html
+
+
 Running instructions
 --------------------
 
