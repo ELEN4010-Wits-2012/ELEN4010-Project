@@ -1,4 +1,4 @@
-package za.ac.wits.elen4010.fluidsim.mpiNodalCode;
+package za.ac.wits.elen4010.fluidsim.tests;
 
 import java.io.IOException;
 import java.util.Random;
@@ -12,20 +12,20 @@ import mpi.*;
  * Test suite for mpi classes
  * @author Graham Peyton
  */
-class mpiTests {
+public class mpiTests {
 
     /** Random number generator */
     Random randomGenerator = new Random();
     
-    /** 
-     * Main function for the compiler to recognise
-     */
-    public static void main(String args[])
-    {
-        mpiTests tests = new mpiTests();
-        tests.testMainNodeRunMethodProducesCorrectSimulationOutput();
-        tests.testAggregateDataWorksCorrectly();
-    }
+//    /** 
+//     * Main function for the compiler to recognise
+//     */
+//    public static void main(String args[])
+//    {
+//        mpiTests tests = new mpiTests();
+//        tests.testMainNodeRunMethodProducesCorrectSimulationOutput();
+//        tests.testAggregateDataWorksCorrectly();
+//    }
     
     /**
      * 
@@ -93,9 +93,9 @@ class mpiTests {
         System.out.println("======== Printing " + message + " array =======");
         for (int y = 0; y != array[0].length; ++y) {
             for (int x = 0; x != array.length; ++x) {       // Could also use System.arraycopy()
-                System.out.println(array[x][y]);
+                System.out.print(array[x][y]+ " ");
             }
-            System.out.println("New row");
+            System.out.println();
         }
     }
     

@@ -1,23 +1,32 @@
 <project name="Fluid" default="run" basedir=".">
     <property name="dir.src" value="src/za/ac/wits/elen4010/fluidsim"/>
     <property name="dir.build" value="build"/>
-    <property name="dir.bin" value="bin"/>
+    <property name="dir.lib" value="lib" />
+    <property name="mpi.classes" value="/home/dev3user/mpiJava/lib/classes/" />
 
     <target name="setup">
         <mkdir dir="${dir.build}"/>
     </target>
 
-    <target name="compile" depends="setup" description="Compile source code">
-        <javac srcdir="${dir.src}" destdir="${dir.build}"/>
+    <target name="compile" depends="setup" description="Compile source code, unit tests excluded">
+        <javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.build}" classpath="${mpi.classes}:${dir.lib}/junit-4.10.jar"/>
     </target>
 
     <target name="run" depends="compile">
-        <java dir="${dir.build}" classpath="./build" classname="za.ac.wits.elen4010.fluidsim.sim.GUI" fork="true"/>
+        <java dir="${dir.build}" classpath="${dir.build}" classname="za.ac.wits.elen4010.fluidsim.gui.GUI" fork="true"/>
     </target>
 
     <target name="mpiTest" depends="compile">
         <exec executable="mpiexec"> 
             <arg line="-n 2 -hosts 127.0.0.1 java Main"/>
         </exec>
+    </target>
+
+    <target name="test" depends="compile">
+        <java classname="org.junit.runner.JUnitCore" classpath="${dir.build}:${mpi.classes}:${dir.lib}/junit-4.10.jar" fork="true">
+            <arg value="za.ac.wits.elen4010.fluidsim.tests.EdgeDataTest" />
+            <arg value="za.ac.wits.elen4010.fluidsim.tests.RenderDataTest" />
+            <arg value="za.ac.wits.elen4010.fluidsim.tests.mpiTests" />
+        </java>
     </target>
 </project>
