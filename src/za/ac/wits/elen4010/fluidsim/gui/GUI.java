@@ -79,7 +79,7 @@ class GUI
     /** Prompt the user that the program is being executed on the server*/
     private static final String COULDNT_EXECUTE_SIMULATION = "Failed to execute simulation on the server please try again. If the problem persists, check that this program has access to your machines command terminal.";
     /** The bash command used to copy the files to the server and run the simulation*/
-    private static final String BASH_COPY_AND_RUN = "emacs";
+    private static final String BASH_COPY_AND_RUN = "./startSimulation.sh";
     /**
      * Supported simulation input data file extensions NOTE: these should be gicen in upper case to
      * work with the determineFileType() method
