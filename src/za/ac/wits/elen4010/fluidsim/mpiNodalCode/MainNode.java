@@ -22,8 +22,7 @@ public class MainNode
     int threadCount ;
     /** List of slave nodes */
     List<String> SlaveNodeList = new ArrayList<String>();
-    /** Local factories,container and storage classes */
-    NeighboursData neighbourData ;
+
     /** Hold host state - intialised or not*/
     Boolean hostInitialised = false;
     /** Stores the total number of frames */

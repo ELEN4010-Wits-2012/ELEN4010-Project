@@ -43,9 +43,10 @@ public class RawFrame implements Serializable
      */
     public RawFrame( float[][] data )
     {
-
-        setFrame( data );
-
+        if( data == null )
+            throw new RuntimeException("Error: attempting to initialise a null density array in RawFrame");
+        else
+            setFrame( data );
     }
 
     /**

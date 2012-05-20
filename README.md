@@ -3,11 +3,26 @@ Software Development III - Parallel Fluid Simulator (SmokEIE)
 
 ![logo](http://s17.postimage.org/6za72q2gv/Logo.png)
 
-Compilation instructions
-------------------------
+Group Members
+-------------
 
-1. To run the fluid simulation, run 'ant fluid'
-2. To run the MPI test program, run 'ant mpiTest'
+Rudolf Hoehler (0600134Y)
+Ronald Clark (363095)
+Graham Peyton (309684)
+Justin Wernick (380536)
+Edward Steere (400589)
+
+Prerequisites
+-------------
+MPIJava needs to be present on the computer. The system's CLASSPATH should be set to the mpijava/lib/classes/ folder, and the LD_LIBRARY_PATH variable must be set to the mpijava/lib/ folder.
+MPIJava is available at http://www.hpjava.org/mpiJava.html
+
+
+Running instructions
+--------------------
+
+1. To run the GUI, run 'ant fluid'
+2. To run the unit tests, run 'ant test'
 
 Common Git commands
 -------------------
